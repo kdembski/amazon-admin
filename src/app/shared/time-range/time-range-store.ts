@@ -14,6 +14,7 @@ export const TimeRangeStore = signalStore(
     select: (selection: RangeSelection) => {
       const url = router.parseUrl(router.url);
       url.queryParams = { ...url.queryParams, [RANGE_PARAM]: formatRange(selection) };
+
       return router.navigateByUrl(url);
     },
     resolve: () => resolveRange(store.selection()),
@@ -21,11 +22,13 @@ export const TimeRangeStore = signalStore(
   withHooks((store, router = inject(Router)) => {
     const follow = () => {
       const selection = parseRange(router.parseUrl(router.url).queryParamMap.get(RANGE_PARAM));
+
       // A new object would restart every poll even when the range stayed the same.
       if (formatRange(selection) !== formatRange(store.selection())) {
         patchState(store, { selection });
       }
     };
+
     return {
       onInit: () => {
         follow();

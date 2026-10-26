@@ -17,12 +17,14 @@ export const withPolling = <T>(
     withHooks((store) => {
       const timeRange = inject(TimeRangeStore);
       const load = createLoad();
+
       const follow = rxMethod<RangeSelection>(
         pipe(
           switchMap(() => poll(() => load(timeRange.resolve()), intervalMs)),
           tap((state) => patchState(store, state)),
         ),
       );
+
       return { onInit: () => follow(timeRange.selection) };
     }),
   );

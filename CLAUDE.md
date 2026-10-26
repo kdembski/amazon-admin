@@ -88,6 +88,8 @@ npx ng build
 - Before every commit, stop and wait for the user to review the changes; commit only after their approval.
 - Commit messages: short English sentence starting with a capitalised past-tense verb (`Added ...`, `Fixed ...`).
   No `Co-Authored-By` or other attribution.
+- Separate the sections of a function body (declarations, guard clauses, the main step, the final `return`) with one
+  blank line.
 - Write standalone functions as `const` arrow functions (`export const poll = <T>(...) => { ... }`), never with the
   `function` keyword; class members stay methods.
 - UI text in Polish; code, identifiers and error messages in English.

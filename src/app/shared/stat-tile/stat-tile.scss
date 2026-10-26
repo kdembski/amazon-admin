@@ -1,0 +1,30 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem;
+  border: 1px solid var(--p-content-border-color);
+  border-radius: var(--p-border-radius-md);
+  background: var(--p-content-background);
+}
+
+.label {
+  color: var(--p-text-muted-color);
+  font-size: 0.875rem;
+}
+
+.value {
+  font-size: 1.5rem;
+}
+
+.change {
+  font-size: 0.875rem;
+
+  &.up {
+    color: var(--p-green-600);
+  }
+
+  &.down {
+    color: var(--p-red-600);
+  }
+}

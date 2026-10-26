@@ -13,7 +13,9 @@ export const parseRange = (value: string | null): RangeSelection => {
   if (value && value in PRESET_LENGTHS) {
     return { preset: value as RangePreset };
   }
+
   const [from, to] = (value ?? '').split('_').map((part) => new Date(part));
+
   return from && to && isValidRange({ from, to }) ? { from, to } : DEFAULT_SELECTION;
 };
 
@@ -31,6 +33,7 @@ export const resolveRange = (selection: RangeSelection, now = new Date()): TimeR
 
 export const isValidRange = ({ from, to }: TimeRange) => {
   const length = to.getTime() - from.getTime();
+
   return length > 0 && length <= MAX_RANGE_MS;
 };
 

@@ -25,11 +25,13 @@ export class TimeRangePicker {
 
   readonly preset = computed(() => {
     const selection = this.store.selection();
+
     return 'preset' in selection ? selection.preset : null;
   });
   // A custom range ends at the start of the day after its last day.
   readonly days = computed(() => {
     const selection = this.store.selection();
+
     return 'preset' in selection ? null : [selection.from, addDays(selection.to, -1)];
   });
   readonly error = signal<string | null>(null);
@@ -41,14 +43,18 @@ export class TimeRangePicker {
 
   chooseDays(days: (Date | null)[] | null) {
     const [first, last] = days ?? [];
+
     if (!first || !last) {
       return;
     }
+
     const range = { from: startOfDay(first), to: addDays(startOfDay(last), 1) };
+
     if (!isValidRange(range)) {
       this.error.set('Maksymalnie 30 dni');
       return;
     }
+
     this.error.set(null);
     this.store.select(range);
   }

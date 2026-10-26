@@ -62,7 +62,9 @@ const reduce = <T>(state: PollState<T>, event: PollEvent<T>): PollState<T> => {
 const errorText = (error: unknown) => {
   if (error instanceof HttpErrorResponse) {
     const body = typeof error.error === 'string' && error.error ? error.error : error.statusText;
+
     return `${error.status} ${body}`;
   }
+
   return String(error);
 };
