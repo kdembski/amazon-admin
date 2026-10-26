@@ -1,0 +1,63 @@
+<header class="heading">
+  <h1>Przegląd</h1>
+  @if (store.staleSince(); as staleSince) {
+    <p-tag severity="warn" [value]="'Nieaktualne od ' + (staleSince | date: 'HH:mm')" />
+  }
+</header>
+
+@if (store.data()) {
+  <section class="tiles" aria-label="Podsumowanie">
+    @for (tile of store.tiles(); track tile.label) {
+      <app-stat-tile [label]="tile.label" [value]="tile.value" [previous]="tile.previous" />
+    }
+  </section>
+
+  <section class="panel">
+    <h2>Zebrane ogłoszenia</h2>
+    <app-time-series-chart [series]="store.scrapedSeries()" [fill]="true" [unit]="store.unit()" />
+  </section>
+
+  <section class="panel">
+    <h2>Wysłane anomalie</h2>
+    <app-time-series-chart
+      [series]="store.anomalySeries()"
+      type="bar"
+      [stacked]="true"
+      [unit]="store.unit()"
+    />
+  </section>
+
+  <section class="panel">
+    <h2>Błędy i ostrzeżenia</h2>
+    <app-time-series-chart [series]="store.logSeries()" type="bar" [unit]="store.unit()" />
+  </section>
+
+  <section class="panel">
+    <h2>Najczęstsze źródła logów</h2>
+    <p-table [value]="store.topSources()" size="small">
+      <ng-template #header>
+        <tr>
+          <th scope="col">Źródło</th>
+          <th scope="col">Błędy</th>
+          <th scope="col">Ostrzeżenia</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-row>
+        <tr>
+          <td>{{ row.source }}</td>
+          <td>{{ row.error }}</td>
+          <td>{{ row.warn }}</td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="3">Brak danych</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </section>
+} @else if (store.error(); as error) {
+  <p-message severity="error">Nie udało się pobrać danych: {{ error }}</p-message>
+} @else {
+  <p class="loading">Ładowanie…</p>
+}
