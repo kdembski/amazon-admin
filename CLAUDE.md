@@ -69,6 +69,7 @@ through `/api` (dev: `proxy.conf.mjs`, prod: nginx), which adds `Authorization: 
 API_TOKEN=... npm start          # ng serve, /api proxied to http://localhost:5001
 npx ng test --watch=false        # Vitest
 npx ng lint
+npx prettier --write src tests  # format before committing
 npx ng build
 ```
 
@@ -77,6 +78,8 @@ npx ng build
 - `src/app/core/`: app-wide pieces (`api/` clients and DTOs, `layout/` shell).
 - `src/app/shared/`: reusable components and pure helpers (time range, polling, charts, stat tile).
 - `src/app/features/<name>/`: one lazy route per view.
+- `src/app/types/`: every exported type and interface of the app (API DTOs in `api-dtos.ts`, others in one file per
+  topic, e.g. `poll-state.ts`); code files hold no type declarations.
 - `tests/`: unit tests, mirroring `src/` (`src/app/core/layout/shell.ts` → `tests/app/core/layout/shell.spec.ts`);
   import tested code through the `@app/*` alias (`src/app/*`), never through relative paths into `src/`.
 
@@ -85,9 +88,12 @@ npx ng build
 - Before every commit, stop and wait for the user to review the changes; commit only after their approval.
 - Commit messages: short English sentence starting with a capitalised past-tense verb (`Added ...`, `Fixed ...`).
   No `Co-Authored-By` or other attribution.
+- Write standalone functions as `const` arrow functions (`export const poll = <T>(...) => { ... }`), never with the
+  `function` keyword; class members stay methods.
 - UI text in Polish; code, identifiers and error messages in English.
 - Never put the API token in the bundle, `environment` files or browser storage.
-- Copy API DTOs from amazon-server into `core/api/api-dtos.ts` with the same field names.
+- HTTP clients: one stateless `<Name>ApiService` per server area in `core/api/` (`stats-api-service.ts`), one method per endpoint.
+- Copy API DTOs from amazon-server into `types/api-dtos.ts` with the same field names.
 - Query `from`/`to` as `Date.toISOString()`; ranges at most 30 days.
 - Poll every 60 s, paused while the tab is hidden.
 - Charts: hours for ranges up to 48 h, days in the browser time zone above.
