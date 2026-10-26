@@ -92,6 +92,9 @@ npx ng build
   `function` keyword; class members stay methods.
 - UI text in Polish; code, identifiers and error messages in English.
 - Never put the API token in the bundle, `environment` files or browser storage.
+- State: NgRx SignalStore (`@ngrx/signals`). Shared state in `providedIn: 'root'` stores, view state in a store provided
+  by the view component; components only read store signals and call store methods. Periodic loading goes through
+  `withPolling(() => (range) => load)` from `shared/polling`.
 - HTTP clients: one stateless `<Name>ApiService` per server area in `core/api/` (`stats-api-service.ts`), one method per endpoint.
 - Copy API DTOs from amazon-server into `types/api-dtos.ts` with the same field names.
 - Query `from`/`to` as `Date.toISOString()`; ranges at most 30 days.

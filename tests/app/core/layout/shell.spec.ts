@@ -20,7 +20,7 @@ describe('Shell', () => {
       ['Przegląd', '/'],
       ['Scrapery', '/scrapers'],
     ]);
-    expect(element.querySelector('header.toolbar')).not.toBeNull();
+    expect(element.querySelector('header.toolbar app-time-range-picker')).not.toBeNull();
     expect(element.querySelector('router-outlet')).not.toBeNull();
   });
 });

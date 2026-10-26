@@ -1,0 +1,25 @@
+<div class="picker">
+  <p-selectbutton
+    [options]="presets"
+    optionLabel="label"
+    optionValue="value"
+    [allowEmpty]="false"
+    [ngModel]="preset()"
+    (ngModelChange)="choosePreset($event)"
+    ariaLabelledBy="range-label"
+  />
+  <p-datepicker
+    selectionMode="range"
+    [ngModel]="days()"
+    (ngModelChange)="chooseDays($event)"
+    [maxDate]="today"
+    [readonlyInput]="true"
+    dateFormat="dd.mm.yy"
+    placeholder="Własny zakres"
+    ariaLabel="Własny zakres dat"
+  />
+  @if (error(); as message) {
+    <small class="error" role="alert">{{ message }}</small>
+  }
+</div>
+<span id="range-label" class="visually-hidden">Zakres czasu</span>
