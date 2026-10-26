@@ -1,0 +1,13 @@
+<div class="layout">
+  <nav aria-label="Główna nawigacja">
+    <span class="brand">amazon-admin</span>
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Przegląd</a>
+    <a routerLink="/scrapers" routerLinkActive="active">Scrapery</a>
+  </nav>
+  <div class="content">
+    <header class="toolbar"></header>
+    <main>
+      <router-outlet />
+    </main>
+  </div>
+</div>
