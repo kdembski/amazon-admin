@@ -5,7 +5,7 @@ import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2
 import { ChartSeries } from '@app/types/chart';
 import { Granularity } from '@app/types/time-range';
 
-// PrimeNG Aura 500 shades; readable on both the light and the dark theme.
+// Tailwind-style 500 shades; readable on both the light and the dark theme.
 const COLORS = [
   '#10b981',
   '#3b82f6',
@@ -65,8 +65,8 @@ export class TimeSeriesChart {
   }));
 
   readonly options = computed(() => {
-    const text = cssVar('--p-text-muted-color', '#64748b');
-    const grid = cssVar('--p-content-border-color', '#e2e8f0');
+    const text = cssVar('--mat-sys-on-surface-variant', '#64748b');
+    const grid = cssVar('--mat-sys-outline-variant', '#e2e8f0');
 
     return {
       maintainAspectRatio: false,

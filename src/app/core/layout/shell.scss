@@ -9,8 +9,8 @@ nav {
   flex-direction: column;
   gap: 0.25rem;
   padding: 1rem 0.75rem;
-  border-right: 1px solid var(--p-content-border-color);
-  background: var(--p-content-background);
+  border-right: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface);
 
   .brand {
     font-weight: 600;
@@ -19,17 +19,17 @@ nav {
 
   a {
     padding: 0.5rem 0.75rem;
-    border-radius: var(--p-border-radius-md);
-    color: var(--p-text-color);
+    border-radius: var(--mat-sys-corner-medium);
+    color: var(--mat-sys-on-surface);
     text-decoration: none;
 
     &:hover {
-      background: var(--p-content-hover-background);
+      background: var(--mat-sys-surface-container-high);
     }
 
     &.active {
-      background: var(--p-highlight-background);
-      color: var(--p-highlight-color);
+      background: var(--mat-sys-secondary-container);
+      color: var(--mat-sys-on-secondary-container);
     }
   }
 }
@@ -42,7 +42,7 @@ nav {
   display: flex;
   justify-content: flex-end;
   padding: 0.75rem 1.5rem;
-  border-bottom: 1px solid var(--p-content-border-color);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
 }
 
 main {
@@ -57,6 +57,6 @@ main {
   nav {
     flex-direction: row;
     border-right: none;
-    border-bottom: 1px solid var(--p-content-border-color);
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
   }
 }

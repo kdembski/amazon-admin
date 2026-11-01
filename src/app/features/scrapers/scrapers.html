@@ -1,0 +1,72 @@
+<header class="heading">
+  <h1>Scrapery</h1>
+  @if (store.staleSince(); as staleSince) {
+    <span class="stale">Nieaktualne od {{ staleSince | date: 'HH:mm' }}</span>
+  }
+</header>
+
+@if (store.data()) {
+  <section class="panel">
+    <h2>Podsumowanie</h2>
+    <table mat-table [dataSource]="rows" matSort matSortActive="scraper" matSortDirection="asc">
+      <ng-container matColumnDef="scraper">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Scraper</th>
+        <td mat-cell *matCellDef="let row">{{ row.scraper }}</td>
+      </ng-container>
+      <ng-container matColumnDef="itemsPerSecond">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Items/s</th>
+        <td mat-cell *matCellDef="let row">
+          {{ formatNumber(row.itemsPerSecond) }} ({{ formatSigned(row.itemsPerSecondDiff) }})
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="requests">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Requests</th>
+        <td mat-cell *matCellDef="let row">{{ formatNumber(row.requests, 0) }}</td>
+      </ng-container>
+      <ng-container matColumnDef="wastedPercent">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Wasted %</th>
+        <td mat-cell *matCellDef="let row">{{ formatNumber(row.wastedPercent) }}</td>
+      </ng-container>
+      <ng-container matColumnDef="captchaPercent">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Captcha %</th>
+        <td mat-cell *matCellDef="let row">{{ formatNumber(row.captchaPercent) }}</td>
+      </ng-container>
+      <ng-container matColumnDef="kbPerItem">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>KB/item</th>
+        <td mat-cell *matCellDef="let row">{{ formatNumber(row.kbPerItem) }}</td>
+      </ng-container>
+      <ng-container matColumnDef="reusePercent">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Reuse %</th>
+        <td mat-cell *matCellDef="let row">{{ formatNumber(row.reusePercent) }}</td>
+      </ng-container>
+      <ng-container matColumnDef="attemptsPerItem">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Attempts/item</th>
+        <td mat-cell *matCellDef="let row">{{ formatNumber(row.attemptsPerItem) }}</td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns"></tr>
+      <tr class="empty-row" *matNoDataRow>
+        <td [attr.colspan]="columns.length">Brak danych</td>
+      </tr>
+    </table>
+  </section>
+
+  <section class="panel">
+    <h2>Items/s</h2>
+    <app-time-series-chart [series]="store.itemsSeries()" [unit]="store.unit()" />
+  </section>
+
+  <section class="panel">
+    <h2>Wasted %</h2>
+    <app-time-series-chart [series]="store.wastedSeries()" [unit]="store.unit()" />
+  </section>
+
+  <section class="panel">
+    <h2>Captcha %</h2>
+    <app-time-series-chart [series]="store.captchaSeries()" [unit]="store.unit()" />
+  </section>
+} @else if (store.error(); as error) {
+  <p class="error" role="alert">Nie udało się pobrać danych: {{ error }}</p>
+} @else {
+  <p class="loading">Ładowanie…</p>
+}

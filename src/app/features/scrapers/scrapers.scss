@@ -1,0 +1,50 @@
+:host {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  h1 {
+    margin: 0;
+    font-size: 1.5rem;
+  }
+}
+
+.panel {
+  padding: 1rem;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: var(--mat-sys-corner-medium);
+
+  h2 {
+    margin: 0 0 1rem;
+    font-size: 1rem;
+  }
+}
+
+.loading {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.stale {
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--mat-sys-corner-small);
+  background: var(--mat-sys-tertiary-container);
+  color: var(--mat-sys-on-tertiary-container);
+  font-size: 0.875rem;
+}
+
+.error {
+  padding: 0.75rem 1rem;
+  border-radius: var(--mat-sys-corner-medium);
+  background: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
+}
+
+.empty-row td {
+  padding: 1rem;
+  color: var(--mat-sys-on-surface-variant);
+}

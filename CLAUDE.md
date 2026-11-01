@@ -66,7 +66,7 @@ through `/api` (dev: `proxy.conf.mjs`, prod: nginx), which adds `Authorization: 
 ### Commands
 
 ```bash
-API_TOKEN=... npm start          # ng serve, /api proxied to http://localhost:5001
+npm start                        # ng serve; /api proxied to API_URL with API_TOKEN, both read from .env (gitignored)
 npx ng test --watch=false        # Vitest
 npx ng lint
 npx prettier --write src tests  # format before committing

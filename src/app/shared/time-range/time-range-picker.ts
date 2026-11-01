@@ -1,15 +1,17 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { addDays, startOfDay } from 'date-fns';
-import { DatePicker } from 'primeng/datepicker';
-import { SelectButton } from 'primeng/selectbutton';
 import { RangePreset } from '@app/types/time-range';
 import { isValidRange } from './time-range';
 import { TimeRangeStore } from './time-range-store';
 
 @Component({
   selector: 'app-time-range-picker',
-  imports: [FormsModule, SelectButton, DatePicker],
+  imports: [MatButtonToggleModule, MatDatepickerModule, MatFormFieldModule],
+  providers: [provideNativeDateAdapter(), { provide: MAT_DATE_LOCALE, useValue: 'pl-PL' }],
   templateUrl: './time-range-picker.html',
   styleUrl: './time-range-picker.scss',
 })
@@ -35,6 +37,7 @@ export class TimeRangePicker {
     return 'preset' in selection ? null : [selection.from, addDays(selection.to, -1)];
   });
   readonly error = signal<string | null>(null);
+  protected readonly start = signal<Date | null>(null);
 
   choosePreset(preset: RangePreset) {
     this.error.set(null);

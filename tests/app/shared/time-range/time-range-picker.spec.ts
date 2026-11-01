@@ -71,5 +71,7 @@ describe('TimeRangePicker', () => {
     expect(text).toContain('24h');
     expect(text).toContain('7 dni');
     expect(text).toContain('30 dni');
+    expect(fixture.nativeElement.querySelector('mat-button-toggle-group')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('mat-date-range-input')).not.toBeNull();
   });
 });

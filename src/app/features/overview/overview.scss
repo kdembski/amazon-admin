@@ -22,8 +22,8 @@
 
 .panel {
   padding: 1rem;
-  border: 1px solid var(--p-content-border-color);
-  border-radius: var(--p-border-radius-md);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: var(--mat-sys-corner-medium);
 
   h2 {
     margin: 0 0 1rem;
@@ -32,5 +32,25 @@
 }
 
 .loading {
-  color: var(--p-text-muted-color);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.stale {
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--mat-sys-corner-small);
+  background: var(--mat-sys-tertiary-container);
+  color: var(--mat-sys-on-tertiary-container);
+  font-size: 0.875rem;
+}
+
+.error {
+  padding: 0.75rem 1rem;
+  border-radius: var(--mat-sys-corner-medium);
+  background: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
+}
+
+.empty-row td {
+  padding: 1rem;
+  color: var(--mat-sys-on-surface-variant);
 }

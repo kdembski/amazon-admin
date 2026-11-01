@@ -49,14 +49,14 @@ describe('Overview', () => {
     expect(tiles[0]).toContain('Zebrane ogłoszenia');
     expect(tiles[0]).toContain('1234');
     expect(element.textContent).toContain('Brak danych');
-    expect(element.querySelector('p-table')?.textContent).toContain('AmazonAdService');
+    expect(element.querySelector('table')?.textContent).toContain('AmazonAdService');
   });
 
   it('shows the error of a first load that failed', async () => {
     const error = new HttpErrorResponse({ status: 503, statusText: 'Service Unavailable' });
     const element = await render(() => throwError(() => error));
 
-    expect(element.querySelector('p-message')?.textContent).toContain('503 Service Unavailable');
+    expect(element.querySelector('[role=alert]')?.textContent).toContain('503 Service Unavailable');
     expect(element.querySelector('app-stat-tile')).toBeNull();
   });
 });

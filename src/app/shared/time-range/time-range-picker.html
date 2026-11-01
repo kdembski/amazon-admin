@@ -1,25 +1,35 @@
 <div class="picker">
-  <p-selectbutton
-    [options]="presets"
-    optionLabel="label"
-    optionValue="value"
-    [allowEmpty]="false"
-    [ngModel]="preset()"
-    (ngModelChange)="choosePreset($event)"
-    ariaLabelledBy="range-label"
-  />
-  <p-datepicker
-    selectionMode="range"
-    [ngModel]="days()"
-    (ngModelChange)="chooseDays($event)"
-    [maxDate]="today"
-    [readonlyInput]="true"
-    dateFormat="dd.mm.yy"
-    placeholder="Własny zakres"
-    ariaLabel="Własny zakres dat"
-  />
-  @if (error(); as message) {
-    <small class="error" role="alert">{{ message }}</small>
-  }
+  <mat-button-toggle-group
+    aria-label="Zakres czasu"
+    hideSingleSelectionIndicator
+    [value]="preset()"
+    (change)="choosePreset($event.value)"
+  >
+    @for (option of presets; track option.value) {
+      <mat-button-toggle [value]="option.value">{{ option.label }}</mat-button-toggle>
+    }
+  </mat-button-toggle-group>
+
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Własny zakres</mat-label>
+    <mat-date-range-input [rangePicker]="rangePicker" [max]="today">
+      <input
+        matStartDate
+        placeholder="Od"
+        [value]="days()?.[0] ?? null"
+        (dateChange)="start.set($event.value)"
+      />
+      <input
+        matEndDate
+        placeholder="Do"
+        [value]="days()?.[1] ?? null"
+        (dateChange)="chooseDays([start(), $event.value])"
+      />
+    </mat-date-range-input>
+    <mat-datepicker-toggle matIconSuffix [for]="rangePicker" />
+    <mat-date-range-picker #rangePicker />
+    @if (error(); as message) {
+      <mat-error role="alert">{{ message }}</mat-error>
+    }
+  </mat-form-field>
 </div>
-<span id="range-label" class="visually-hidden">Zakres czasu</span>
