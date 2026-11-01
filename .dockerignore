@@ -1,0 +1,5 @@
+.angular
+.env
+.git
+dist
+node_modules

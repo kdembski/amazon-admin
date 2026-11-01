@@ -70,6 +70,7 @@ npm start                        # ng serve; /api proxied to API_URL with API_TO
 npx ng test --watch=false        # Vitest
 npx ng lint
 npx prettier --write src tests  # format before committing
+docker compose up -d --build     # production: nginx on 127.0.0.1:8080, env from .env (see README)
 npx ng build
 ```
 
