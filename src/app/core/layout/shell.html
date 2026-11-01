@@ -1,10 +1,14 @@
 <div class="layout">
   <nav aria-label="Główna nawigacja">
     <span class="brand">amazon-admin</span>
-    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+    <a
+      routerLink="/"
+      queryParamsHandling="preserve"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
       >Przegląd</a
     >
-    <a routerLink="/scrapers" routerLinkActive="active">Scrapery</a>
+    <a routerLink="/scrapers" queryParamsHandling="preserve" routerLinkActive="active">Scrapery</a>
   </nav>
   <div class="content">
     <header class="toolbar">

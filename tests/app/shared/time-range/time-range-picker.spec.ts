@@ -56,6 +56,28 @@ describe('TimeRangePicker', () => {
     expect(picker.error()).toBe('Maksymalnie 30 dni');
   });
 
+  it('shows the rejection to the user', async () => {
+    const { picker, fixture } = setup();
+
+    picker.chooseDays([new Date(2026, 8, 1), new Date(2026, 9, 1)]);
+    await fixture.whenStable();
+
+    const alert = (fixture.nativeElement as HTMLElement).querySelector('[role=alert]');
+    expect(alert?.textContent?.trim()).toBe('Maksymalnie 30 dni');
+  });
+
+  it('accepts 30 days across the DST change, capped at 30 × 24 h', () => {
+    const { store, picker } = setup();
+
+    picker.chooseDays([new Date(2026, 9, 2), new Date(2026, 9, 31)]);
+
+    const to = new Date(2026, 10, 1);
+    expect(store.select).toHaveBeenCalledWith({
+      from: new Date(to.getTime() - 30 * 86_400_000),
+      to,
+    });
+  });
+
   it('shows the days of a custom range and no preset', () => {
     const { picker } = setup({ from: new Date(2026, 9, 20), to: new Date(2026, 9, 23) });
 

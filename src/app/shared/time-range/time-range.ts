@@ -10,7 +10,7 @@ const PRESET_LENGTHS: Record<RangePreset, number> = { '24h': DAY, '7d': 7 * DAY,
 const DEFAULT_SELECTION: RangeSelection = { preset: '24h' };
 
 export const parseRange = (value: string | null): RangeSelection => {
-  if (value && value in PRESET_LENGTHS) {
+  if (value && Object.hasOwn(PRESET_LENGTHS, value)) {
     return { preset: value as RangePreset };
   }
 

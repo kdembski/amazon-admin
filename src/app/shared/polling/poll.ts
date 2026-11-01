@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   catchError,
+  defer,
   exhaustMap,
   filter,
   fromEvent,
@@ -24,7 +25,7 @@ export const poll = <T>(
   return merge(timer(intervalMs, intervalMs).pipe(startWith(0)), visible).pipe(
     filter(() => !doc.hidden),
     exhaustMap(() =>
-      load().pipe(
+      defer(load).pipe(
         map((data): PollEvent<T> => ({ type: 'data', data })),
         catchError((error: unknown) =>
           of<PollEvent<T>>({ type: 'error', error: errorText(error) }),

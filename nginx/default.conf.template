@@ -3,8 +3,20 @@ server {
   root /usr/share/nginx/html;
 
   location /api/ {
+    # Only the panel itself may use the token: other sites in the browser get 403.
+    if ($http_sec_fetch_site ~ ^(cross-site|same-site)$) {
+      return 403;
+    }
+    if ($request_method = OPTIONS) {
+      return 403;
+    }
+
     proxy_pass ${API_URL}/;
     proxy_set_header Authorization "Bearer ${API_TOKEN}";
+    proxy_hide_header Access-Control-Allow-Origin;
+    proxy_hide_header Access-Control-Allow-Methods;
+    proxy_hide_header Access-Control-Allow-Headers;
+    proxy_hide_header Access-Control-Allow-Credentials;
     proxy_read_timeout 120s;
   }
 

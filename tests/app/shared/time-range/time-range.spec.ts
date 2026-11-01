@@ -25,6 +25,8 @@ describe('parseRange', () => {
   it.each([
     ['no value', null],
     ['garbage', 'yesterday'],
+    ['an inherited key', 'constructor'],
+    ['the prototype key', '__proto__'],
     ['an invalid date', `abc_${iso(0)}`],
     ['a reversed range', `${iso(DAY)}_${iso(0)}`],
     ['an empty range', `${iso(0)}_${iso(0)}`],

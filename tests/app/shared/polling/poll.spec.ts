@@ -113,6 +113,23 @@ describe('poll', () => {
     expect(calls).toBe(1);
   });
 
+  it('reports a load that throws before returning and keeps polling', () => {
+    let calls = 0;
+    const { last } = run(() => {
+      calls++;
+      throw new RangeError('Invalid time value');
+    });
+
+    expect(last()).toMatchObject({
+      data: null,
+      error: 'RangeError: Invalid time value',
+      loading: false,
+    });
+
+    vi.advanceTimersByTime(1000);
+    expect(calls).toBe(2);
+  });
+
   it('stops polling on unsubscribe', () => {
     let calls = 0;
     const { subscription } = run(() => of(++calls));

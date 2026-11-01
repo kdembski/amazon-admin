@@ -3,9 +3,9 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { addDays, startOfDay } from 'date-fns';
+import { addDays, differenceInCalendarDays, startOfDay } from 'date-fns';
 import { RangePreset } from '@app/types/time-range';
-import { isValidRange } from './time-range';
+import { MAX_RANGE_MS } from './time-range';
 import { TimeRangeStore } from './time-range-store';
 
 @Component({
@@ -51,14 +51,16 @@ export class TimeRangePicker {
       return;
     }
 
-    const range = { from: startOfDay(first), to: addDays(startOfDay(last), 1) };
-
-    if (!isValidRange(range)) {
+    if (differenceInCalendarDays(last, first) + 1 > 30) {
       this.error.set('Maksymalnie 30 dni');
       return;
     }
 
+    const to = addDays(startOfDay(last), 1);
+    // 30 days across the October DST change last 30 × 24 h + 1 h, more than the API accepts.
+    const from = new Date(Math.max(startOfDay(first).getTime(), to.getTime() - MAX_RANGE_MS));
+
     this.error.set(null);
-    this.store.select(range);
+    this.store.select({ from, to });
   }
 }

@@ -28,8 +28,9 @@
     </mat-date-range-input>
     <mat-datepicker-toggle matIconSuffix [for]="rangePicker" />
     <mat-date-range-picker #rangePicker />
-    @if (error(); as message) {
-      <mat-error role="alert">{{ message }}</mat-error>
-    }
   </mat-form-field>
+
+  @if (error(); as message) {
+    <p class="error" role="alert">{{ message }}</p>
+  }
 </div>
