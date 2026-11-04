@@ -66,7 +66,7 @@ describe('OverviewStore', () => {
     expect(store.unit()).toBe('hour');
     expect(store.scrapedSeries()[0].points).toHaveLength(24);
     expect(store.anomalySeries()).toEqual([]);
-    expect(store.logSeries().map((s) => s.label)).toEqual(['Błędy', 'Ostrzeżenia']);
+    expect(store.logSeries().map((s) => s.label)).toEqual(['Errors', 'Warnings']);
     expect(store.topSources()).toEqual([{ source: 'A', error: 1, warn: 2 }]);
   });
 });

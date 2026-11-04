@@ -48,8 +48,8 @@ describe('ScraperSummaryStore', () => {
 
     expect(api.getSummaries).toHaveBeenCalledWith({ from: hourFrom, to: now });
     expect(store.data()!.map((period) => [period.name, period.tiles[0].value])).toEqual([
-      ['Ostatnia godzina', 20],
-      ['Ostatnie 24 h', 240],
+      ['Last hour', 20],
+      ['Last 24 h', 240],
     ]);
   });
 });

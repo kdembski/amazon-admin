@@ -47,14 +47,14 @@ describe('Overview', () => {
     const tiles = [...summary.querySelectorAll('.tile')].map((tile) =>
       tile.textContent?.replace(/\s+/g, ' ').trim(),
     );
-    expect(summary.textContent).toContain('Ostatnia godzina');
-    expect(summary.textContent).toContain('Ostatnie 24 h');
-    expect(summary.textContent).not.toContain('Błędy');
+    expect(summary.textContent).toContain('Last hour');
+    expect(summary.textContent).toContain('Last 24 h');
+    expect(summary.textContent).not.toContain('Errors');
     expect(tiles).toHaveLength(6);
-    expect(tiles[0]).toContain('Zebrane ogłoszenia');
+    expect(tiles[0]).toContain('Scraped ads');
     expect(tiles[0]).toContain('1234');
     expect(tiles[0]).toContain('+23%');
-    expect(element.textContent).toContain('Brak danych');
+    expect(element.textContent).toContain('No data');
     expect(element.querySelector('table')?.textContent).toContain('AmazonAdService');
   });
 

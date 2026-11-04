@@ -36,8 +36,8 @@ describe('loadLastHourAndDay', () => {
     expect(tiles).toHaveBeenCalledWith({ from: new Date('2026-10-26T09:00:00.000Z'), to: now });
     expect(tiles).toHaveBeenCalledWith({ from: new Date('2026-10-25T10:00:00.000Z'), to: now });
     expect(periods.map((period) => [period.name, period.tiles[0].label])).toEqual([
-      ['Ostatnia godzina', '1 h'],
-      ['Ostatnie 24 h', '24 h'],
+      ['Last hour', '1 h'],
+      ['Last 24 h', '24 h'],
     ]);
   });
 });

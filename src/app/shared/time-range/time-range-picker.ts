@@ -20,8 +20,8 @@ export class TimeRangePicker {
 
   protected readonly presets = [
     { label: '24h', value: '24h' },
-    { label: '7 dni', value: '7d' },
-    { label: '30 dni', value: '30d' },
+    { label: '7 days', value: '7d' },
+    { label: '30 days', value: '30d' },
   ];
   protected readonly today = new Date();
 
@@ -52,7 +52,7 @@ export class TimeRangePicker {
     }
 
     if (differenceInCalendarDays(last, first) + 1 > 30) {
-      this.error.set('Maksymalnie 30 dni');
+      this.error.set('At most 30 days');
       return;
     }
 

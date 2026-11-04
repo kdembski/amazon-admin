@@ -57,15 +57,15 @@ describe('SummaryStore', () => {
   it('builds the tiles of each period', () => {
     const { store } = setup();
 
-    expect(store.data()!.map((p) => p.name)).toEqual(['Ostatnia godzina', 'Ostatnie 24 h']);
+    expect(store.data()!.map((p) => p.name)).toEqual(['Last hour', 'Last 24 h']);
     expect(store.data()![0].tiles[0]).toEqual({
-      label: 'Zebrane ogłoszenia',
+      label: 'Scraped ads',
       value: 2,
       change: 100,
       details: [],
     });
     expect(store.data()![1].tiles[0]).toEqual({
-      label: 'Zebrane ogłoszenia',
+      label: 'Scraped ads',
       value: 30,
       change: 2900,
       details: [],

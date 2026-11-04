@@ -23,8 +23,8 @@ export const loadLastHourAndDay = (
     tiles({ from: new Date(to.getTime() - 24 * HOUR), to }),
   ]).pipe(
     map(([hour, day]) => [
-      { name: 'Ostatnia godzina', tiles: hour },
-      { name: 'Ostatnie 24 h', tiles: day },
+      { name: 'Last hour', tiles: hour },
+      { name: 'Last 24 h', tiles: day },
     ]),
   );
 };

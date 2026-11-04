@@ -16,10 +16,10 @@ describe('TimeSeriesChart', () => {
   it.each([
     ['no series', []],
     ['only zeros', [{ label: 'A', points: [{ t, value: 0 }] }]],
-  ])('shows "Brak danych" for %s', async (_, series) => {
+  ])('shows "No data" for %s', async (_, series) => {
     const { element } = await render(series);
 
-    expect(element.textContent).toContain('Brak danych');
+    expect(element.textContent).toContain('No data');
     expect(element.querySelector('canvas')).toBeNull();
   });
 

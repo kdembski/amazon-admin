@@ -93,7 +93,7 @@ npx ng build
   blank line.
 - Write standalone functions as `const` arrow functions (`export const poll = <T>(...) => { ... }`), never with the
   `function` keyword; class members stay methods.
-- UI text in Polish; code, identifiers and error messages in English.
+- UI text, code, identifiers and error messages in English.
 - Never put the API token in the bundle, `environment` files or browser storage.
 - State: NgRx SignalStore (`@ngrx/signals`). Shared state in `providedIn: 'root'` stores, view state in a store provided
   by the view component; components only read store signals and call store methods. Periodic loading goes through

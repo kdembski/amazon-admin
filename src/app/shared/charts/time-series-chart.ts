@@ -32,7 +32,7 @@ const cssVar = (name: string, fallback: string) => {
         <canvas baseChart [type]="type()" [data]="data()" [options]="options()"></canvas>
       </div>
     } @else {
-      <p class="empty">Brak danych</p>
+      <p class="empty">No data</p>
     }
   `,
   styleUrl: './time-series-chart.scss',

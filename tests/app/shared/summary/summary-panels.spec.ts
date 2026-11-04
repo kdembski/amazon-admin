@@ -4,10 +4,10 @@ import { SummaryPeriod } from '@app/types/summary';
 
 const periods: SummaryPeriod[] = [
   {
-    name: 'Ostatnia godzina',
+    name: 'Last hour',
     tiles: [
       {
-        label: 'Requesty',
+        label: 'Requests',
         value: 1234,
         change: 25,
         details: [{ label: 'amazon-pdp', value: 1000, change: -10 }],
@@ -29,7 +29,7 @@ describe('SummaryPanels', () => {
   it('shows a titled panel of tiles per period', async () => {
     const element = await render();
 
-    expect(element.querySelector('h2')?.textContent).toBe('Ostatnia godzina');
+    expect(element.querySelector('h2')?.textContent).toBe('Last hour');
     expect(element.querySelectorAll('.tile')).toHaveLength(2);
   });
 
@@ -49,9 +49,9 @@ describe('SummaryPanels', () => {
     const detail = (label: string) => ({ label, value: 1, change: null });
     const element = await render([
       {
-        name: 'Ostatnia godzina',
+        name: 'Last hour',
         tiles: [
-          { label: 'Zebrane', value: 1, change: null, details: [detail('a')] },
+          { label: 'Scraped', value: 1, change: null, details: [detail('a')] },
           {
             label: 'Outliers',
             value: 3,
@@ -69,7 +69,7 @@ describe('SummaryPanels', () => {
   it('drops the change column of details without any change', async () => {
     const element = await render([
       {
-        name: 'Ostatnia godzina',
+        name: 'Last hour',
         tiles: [
           {
             label: 'Country outliers',

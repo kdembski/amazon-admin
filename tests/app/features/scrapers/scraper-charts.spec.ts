@@ -56,7 +56,7 @@ describe('toRequestTiles', () => {
       toRequestTiles([summary('amazon-pdp', 300, 200), summary('amazon-plp', 100, 0)]),
     ).toEqual([
       {
-        label: 'Requesty',
+        label: 'Requests',
         value: 400,
         change: 100,
         details: [

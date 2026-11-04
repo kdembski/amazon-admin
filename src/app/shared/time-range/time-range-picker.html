@@ -1,6 +1,6 @@
 <div class="picker">
   <mat-form-field class="preset" subscriptSizing="dynamic">
-    <mat-label>Zakres</mat-label>
+    <mat-label>Range</mat-label>
     <mat-select [value]="preset()" (selectionChange)="choosePreset($event.value)">
       @for (option of presets; track option.value) {
         <mat-option [value]="option.value">{{ option.label }}</mat-option>
@@ -9,17 +9,17 @@
   </mat-form-field>
 
   <mat-form-field class="days" subscriptSizing="dynamic">
-    <mat-label>Własny zakres</mat-label>
+    <mat-label>Custom range</mat-label>
     <mat-date-range-input [rangePicker]="rangePicker" [max]="today">
       <input
         matStartDate
-        placeholder="Od"
+        placeholder="From"
         [value]="days()?.[0] ?? null"
         (dateChange)="start.set($event.value)"
       />
       <input
         matEndDate
-        placeholder="Do"
+        placeholder="To"
         [value]="days()?.[1] ?? null"
         (dateChange)="chooseDays([start(), $event.value])"
       />

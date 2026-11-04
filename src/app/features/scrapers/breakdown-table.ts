@@ -46,7 +46,7 @@ import { BreakdownColumn } from '@app/types/scrapers';
         <td mat-cell *matCellDef="let row">{{ formatMegabytes(row.bytesOut) }}</td>
       </ng-container>
       <ng-container matColumnDef="connections">
-        <th mat-header-cell *matHeaderCellDef>Połączenia</th>
+        <th mat-header-cell *matHeaderCellDef>Connections</th>
         <td mat-cell *matCellDef="let row">{{ formatNumber(row.connections, 0) }}</td>
       </ng-container>
       <ng-container matColumnDef="reusePercent">
@@ -56,7 +56,7 @@ import { BreakdownColumn } from '@app/types/scrapers';
       <tr mat-header-row *matHeaderRowDef="allColumns()"></tr>
       <tr mat-row *matRowDef="let row; columns: allColumns()"></tr>
       <tr class="empty-row" *matNoDataRow>
-        <td [attr.colspan]="allColumns().length">Brak danych</td>
+        <td [attr.colspan]="allColumns().length">No data</td>
       </tr>
     </table>
   `,

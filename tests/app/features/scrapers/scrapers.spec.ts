@@ -88,7 +88,7 @@ describe('Scrapers', () => {
 
     const tiles = [...element.querySelectorAll('.tile')].map((tile) => tile.textContent);
     expect(tiles).toHaveLength(2);
-    expect(tiles[0]).toContain('Requesty');
+    expect(tiles[0]).toContain('Requests');
     expect(tiles[0]).toContain('+100%');
   });
 
@@ -98,12 +98,12 @@ describe('Scrapers', () => {
       [{ scraper: 'amazon-plp', lastReportAt: '2000-01-01T00:00:00.000Z' }],
     );
 
-    expect(element.textContent).toContain('Brak raportów od');
+    expect(element.textContent).toContain('No reports for');
   });
 
-  it('shows "Brak danych" without scrapers', async () => {
+  it('shows "No data" without scrapers', async () => {
     const element = await render([]);
 
-    expect(element.textContent).toContain('Brak danych');
+    expect(element.textContent).toContain('No data');
   });
 });

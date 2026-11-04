@@ -29,8 +29,8 @@ describe('Shell', () => {
     const element = await render('/');
 
     expect(links(element)).toEqual([
-      ['Przegląd', '/'],
-      ['Scrapery', '/scrapers'],
+      ['Overview', '/'],
+      ['Scrapers', '/scrapers'],
     ]);
     expect(element.querySelector('header.toolbar app-time-range-picker')).not.toBeNull();
     expect(element.querySelector('router-outlet')).not.toBeNull();
@@ -40,8 +40,8 @@ describe('Shell', () => {
     const element = await render('/?range=7d');
 
     expect(links(element)).toEqual([
-      ['Przegląd', '/?range=7d'],
-      ['Scrapery', '/scrapers?range=7d'],
+      ['Overview', '/?range=7d'],
+      ['Scrapers', '/scrapers?range=7d'],
     ]);
   });
 });

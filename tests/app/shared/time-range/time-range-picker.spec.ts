@@ -53,7 +53,7 @@ describe('TimeRangePicker', () => {
     picker.chooseDays([new Date(2026, 8, 1), new Date(2026, 9, 1)]);
 
     expect(store.select).not.toHaveBeenCalled();
-    expect(picker.error()).toBe('Maksymalnie 30 dni');
+    expect(picker.error()).toBe('At most 30 days');
   });
 
   it('shows the rejection to the user', async () => {
@@ -63,7 +63,7 @@ describe('TimeRangePicker', () => {
     await fixture.whenStable();
 
     const alert = (fixture.nativeElement as HTMLElement).querySelector('[role=alert]');
-    expect(alert?.textContent?.trim()).toBe('Maksymalnie 30 dni');
+    expect(alert?.textContent?.trim()).toBe('At most 30 days');
   });
 
   it('accepts 30 days across the DST change, capped at 30 × 24 h', () => {
@@ -90,7 +90,7 @@ describe('TimeRangePicker', () => {
     await fixture.whenStable();
 
     const select = (fixture.nativeElement as HTMLElement).querySelector('mat-select');
-    expect(select?.textContent).toContain('7 dni');
+    expect(select?.textContent).toContain('7 days');
     expect(fixture.nativeElement.querySelector('mat-date-range-input')).not.toBeNull();
   });
 });

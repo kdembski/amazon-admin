@@ -45,7 +45,7 @@ describe('BreakdownTable', () => {
       'Requests',
       'In MB',
       'Out MB',
-      'Połączenia',
+      'Connections',
       'Reuse %',
     ]);
     expect(texts(element, 'tr.mat-mdc-row td')).toEqual([
@@ -68,9 +68,9 @@ describe('BreakdownTable', () => {
     expect(texts(element, 'tr.mat-mdc-row td').slice(2)).toEqual(['1,50', '10,00', '2,00', '1,25']);
   });
 
-  it('shows "Brak danych" without rows', async () => {
+  it('shows "No data" without rows', async () => {
     const element = await render([], ['requests']);
 
-    expect(element.textContent).toContain('Brak danych');
+    expect(element.textContent).toContain('No data');
   });
 });

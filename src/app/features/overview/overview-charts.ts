@@ -5,7 +5,7 @@ import { ChartSeries } from '@app/types/chart';
 import { SummaryStat, SummaryTile } from '@app/types/summary';
 import { Granularity, TimeRange } from '@app/types/time-range';
 
-const LOG_LABELS = { error: 'Błędy', warn: 'Ostrzeżenia' };
+const LOG_LABELS = { error: 'Errors', warn: 'Warnings' };
 
 export const toScrapedSeries = (
   dto: ActivityStatsDto,
@@ -14,9 +14,7 @@ export const toScrapedSeries = (
 ): ChartSeries[] => {
   const scraped = dto.series.find((series) => series.type === 'ad_scraped');
 
-  return [
-    { label: 'Zebrane ogłoszenia', points: toChartPoints(scraped?.points ?? [], range, unit) },
-  ];
+  return [{ label: 'Scraped ads', points: toChartPoints(scraped?.points ?? [], range, unit) }];
 };
 
 // A channel no longer in the settings keeps only its id.
@@ -86,10 +84,10 @@ export const toSummaryTiles = (dto: ActivityStatsDto): SummaryTile[] => {
 
   return [
     tile(
-      'Zebrane ogłoszenia',
+      'Scraped ads',
       'ad_scraped',
       comparable
-        ? [stat(`${comparable.minPrices}+ cen`, comparable.total, comparable.previousTotal)]
+        ? [stat(`${comparable.minPrices}+ prices`, comparable.total, comparable.previousTotal)]
         : [],
     ),
     tile('Country outliers', 'country_outlier_sent', channels.map(sent)),

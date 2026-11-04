@@ -47,7 +47,7 @@ describe('toScrapedSeries', () => {
   it('fills every hour of the range with zeros', () => {
     expect(toScrapedSeries(activity, range, 'hour')).toEqual([
       {
-        label: 'Zebrane ogłoszenia',
+        label: 'Scraped ads',
         points: [
           { t: hour(10), value: 0 },
           { t: hour(11), value: 40 },
@@ -90,7 +90,7 @@ describe('toLogSeries', () => {
   it('returns errors and warnings', () => {
     const series = toLogSeries(logs, range, 'hour');
 
-    expect(series.map((s) => s.label)).toEqual(['Błędy', 'Ostrzeżenia']);
+    expect(series.map((s) => s.label)).toEqual(['Errors', 'Warnings']);
     expect(series[0].points.map((p) => p.value)).toEqual([0, 0, 2]);
   });
 });
@@ -99,10 +99,10 @@ describe('toSummaryTiles', () => {
   it('returns the totals with their change, the comparable ads and the outliers per channel', () => {
     expect(toSummaryTiles(activity)).toEqual([
       {
-        label: 'Zebrane ogłoszenia',
+        label: 'Scraped ads',
         value: 40,
         change: 100,
-        details: [{ label: '3+ cen', value: 10, change: 100 }],
+        details: [{ label: '3+ prices', value: 10, change: 100 }],
       },
       {
         label: 'Country outliers',

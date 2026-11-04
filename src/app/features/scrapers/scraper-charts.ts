@@ -46,7 +46,7 @@ export const toRequestTiles = (summaries: ScraperMetricSummary[]): SummaryTile[]
 
   return [
     {
-      ...stat('Requesty', total('requests'), total('previousRequests')),
+      ...stat('Requests', total('requests'), total('previousRequests')),
       details: summaries.map((summary) =>
         stat(summary.scraper, summary.requests, summary.previousRequests),
       ),
