@@ -6,9 +6,3 @@ export interface OverviewData {
   logs: LogStatsDto;
   range: TimeRange;
 }
-
-export interface Tile {
-  label: string;
-  value: number;
-  previous: number;
-}

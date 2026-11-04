@@ -17,6 +17,7 @@ const activity: ActivityStatsDto = {
   ],
   totals: { ad_scraped: 7, country_outlier_sent: 0, price_drop_sent: 0 },
   previousTotals: { ad_scraped: 5, country_outlier_sent: 0, price_drop_sent: 0 },
+  countryOutlierChannels: [],
 };
 
 const logs: LogStatsDto = {
@@ -59,11 +60,10 @@ describe('OverviewStore', () => {
     expect(api.getLogs).toHaveBeenCalledWith(range);
   });
 
-  it('derives tiles, series and top sources from the loaded data', () => {
+  it('derives series and top sources from the loaded data', () => {
     const { store } = setup();
 
     expect(store.unit()).toBe('hour');
-    expect(store.tiles()[0]).toEqual({ label: 'Zebrane ogłoszenia', value: 7, previous: 5 });
     expect(store.scrapedSeries()[0].points).toHaveLength(24);
     expect(store.anomalySeries()).toEqual([]);
     expect(store.logSeries().map((s) => s.label)).toEqual(['Błędy', 'Ostrzeżenia']);

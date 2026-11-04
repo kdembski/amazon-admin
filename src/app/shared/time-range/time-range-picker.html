@@ -1,16 +1,14 @@
 <div class="picker">
-  <mat-button-toggle-group
-    aria-label="Zakres czasu"
-    hideSingleSelectionIndicator
-    [value]="preset()"
-    (change)="choosePreset($event.value)"
-  >
-    @for (option of presets; track option.value) {
-      <mat-button-toggle [value]="option.value">{{ option.label }}</mat-button-toggle>
-    }
-  </mat-button-toggle-group>
+  <mat-form-field class="preset" subscriptSizing="dynamic">
+    <mat-label>Zakres</mat-label>
+    <mat-select [value]="preset()" (selectionChange)="choosePreset($event.value)">
+      @for (option of presets; track option.value) {
+        <mat-option [value]="option.value">{{ option.label }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
 
-  <mat-form-field subscriptSizing="dynamic">
+  <mat-form-field class="days" subscriptSizing="dynamic">
     <mat-label>Własny zakres</mat-label>
     <mat-date-range-input [rangePicker]="rangePicker" [max]="today">
       <input

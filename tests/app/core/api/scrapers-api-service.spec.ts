@@ -34,4 +34,22 @@ describe('ScrapersApiService', () => {
     request.flush({ ok: true });
     expect(body).toEqual({ ok: true });
   });
+
+  it('getBreakdown requests /api/scrapers/breakdown with the range and the key', () => {
+    api.getBreakdown(range, 'country').subscribe();
+
+    const request = http.expectOne((r) => r.url === '/api/scrapers/breakdown');
+    expect(request.request.params.get('from')).toBe('2026-10-26T00:00:00.000Z');
+    expect(request.request.params.get('to')).toBe('2026-10-26T12:00:00.000Z');
+    expect(request.request.params.get('by')).toBe('country');
+    request.flush([]);
+  });
+
+  it('getStatuses requests /api/scrapers/statuses', () => {
+    let body: unknown;
+    api.getStatuses().subscribe((value) => (body = value));
+
+    http.expectOne('/api/scrapers/statuses').flush([{ scraper: 'a', lastReportAt: 't' }]);
+    expect(body).toEqual([{ scraper: 'a', lastReportAt: 't' }]);
+  });
 });

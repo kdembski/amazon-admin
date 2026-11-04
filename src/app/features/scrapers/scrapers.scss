@@ -14,15 +14,18 @@
   }
 }
 
-.panel {
+.panel h2 {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.panel-body {
   padding: 1rem;
   border: 1px solid var(--mat-sys-outline-variant);
   border-radius: var(--mat-sys-corner-medium);
-
-  h2 {
-    margin: 0 0 1rem;
-    font-size: 1rem;
-  }
+  background: var(--mat-sys-surface-container-low);
+  --mat-table-background-color: transparent;
 }
 
 .loading {
@@ -47,4 +50,17 @@
 .empty-row td {
   padding: 1rem;
   color: var(--mat-sys-on-surface-variant);
+}
+
+.status {
+  font-size: 13px;
+  font-weight: 500;
+
+  &.ok {
+    color: light-dark(#2e7d32, #81c784);
+  }
+
+  &.stopped {
+    color: var(--mat-sys-error);
+  }
 }

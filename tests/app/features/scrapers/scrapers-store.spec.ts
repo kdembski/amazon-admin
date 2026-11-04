@@ -4,7 +4,7 @@ import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { ScrapersApiService } from '@app/core/api/scrapers-api-service';
 import { ScrapersStore } from '@app/features/scrapers/scrapers-store';
-import { ScraperMetricSummary, ScraperSeries } from '@app/types/api-dtos';
+import { ScraperBreakdown, ScraperMetricSummary, ScraperSeries } from '@app/types/api-dtos';
 
 @Component({ template: '' })
 class Blank {}
@@ -21,7 +21,13 @@ const summary: ScraperMetricSummary = {
   kbPerItem: 9,
   reusePercent: 80,
   attemptsPerItem: 1.2,
+  bytesIn: 2048,
+  bytesOut: 1024,
+  connections: 20,
+  previousRequests: 50,
 };
+
+const country: ScraperBreakdown = { ...summary, group: 'de' };
 
 const series: ScraperSeries[] = [
   {
@@ -39,7 +45,16 @@ const series: ScraperSeries[] = [
 ];
 
 const setup = () => {
-  const api = { getSummaries: vi.fn(() => of([summary])), getSeries: vi.fn(() => of(series)) };
+  const api = {
+    getSummaries: vi.fn(() => of([summary])),
+    getSeries: vi.fn(() => of(series)),
+    getBreakdown: vi.fn((_range: unknown, by: string) =>
+      of(by === 'country' ? [country] : [{ ...summary, group: 'pdp' }]),
+    ),
+    getStatuses: vi.fn(() =>
+      of([{ scraper: 'amazon-pdp-1', lastReportAt: '2026-10-26T09:50:00.000Z' }]),
+    ),
+  };
   TestBed.configureTestingModule({
     providers: [
       provideRouter([{ path: '**', component: Blank }]),
@@ -67,6 +82,24 @@ describe('ScrapersStore', () => {
 
     expect(api.getSummaries).toHaveBeenCalledWith(range);
     expect(api.getSeries).toHaveBeenCalledWith(range);
+    expect(api.getBreakdown).toHaveBeenCalledWith(range, 'country');
+    expect(api.getBreakdown).toHaveBeenCalledWith(range, 'flow');
+    expect(api.getStatuses).toHaveBeenCalled();
+  });
+
+  it('exposes the breakdowns and the statuses measured at load time', () => {
+    const { store } = setup();
+
+    expect(store.countries()).toEqual([country]);
+    expect(store.flows()[0].group).toBe('pdp');
+    expect(store.statuses()).toEqual([
+      {
+        scraper: 'amazon-pdp-1',
+        lastReportAt: new Date('2026-10-26T09:50:00.000Z'),
+        minutesAgo: 10,
+        stopped: true,
+      },
+    ]);
   });
 
   it('derives the table rows and the three charts', () => {

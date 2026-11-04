@@ -5,54 +5,66 @@
   }
 </header>
 
-@if (store.data()) {
-  <section class="tiles" aria-label="Podsumowanie">
-    @for (tile of store.tiles(); track tile.label) {
-      <app-stat-tile [label]="tile.label" [value]="tile.value" [previous]="tile.previous" />
-    }
-  </section>
+<section class="summary" aria-label="Podsumowanie">
+  @if (summary.data(); as periods) {
+    <app-summary-panels [periods]="periods" />
+  } @else if (summary.error(); as error) {
+    <p class="error" role="alert">Nie udało się pobrać podsumowania: {{ error }}</p>
+  } @else {
+    <p class="loading">Ładowanie…</p>
+  }
+</section>
 
+@if (store.data()) {
   <section class="panel">
     <h2>Zebrane ogłoszenia</h2>
-    <app-time-series-chart [series]="store.scrapedSeries()" [fill]="true" [unit]="store.unit()" />
+    <div class="panel-body">
+      <app-time-series-chart [series]="store.scrapedSeries()" [fill]="true" [unit]="store.unit()" />
+    </div>
   </section>
 
   <section class="panel">
     <h2>Wysłane anomalie</h2>
-    <app-time-series-chart
-      [series]="store.anomalySeries()"
-      type="bar"
-      [stacked]="true"
-      [unit]="store.unit()"
-    />
+    <div class="panel-body">
+      <app-time-series-chart
+        [series]="store.anomalySeries()"
+        type="bar"
+        [stacked]="true"
+        [unit]="store.unit()"
+      />
+    </div>
   </section>
 
   <section class="panel">
     <h2>Błędy i ostrzeżenia</h2>
-    <app-time-series-chart [series]="store.logSeries()" type="bar" [unit]="store.unit()" />
+    <div class="panel-body">
+      <app-time-series-chart [series]="store.logSeries()" type="bar" [unit]="store.unit()" />
+    </div>
   </section>
 
   <section class="panel">
     <h2>Najczęstsze źródła logów</h2>
-    <table mat-table [dataSource]="store.topSources()">
-      <ng-container matColumnDef="source">
-        <th mat-header-cell *matHeaderCellDef>Źródło</th>
-        <td mat-cell *matCellDef="let row">{{ row.source }}</td>
-      </ng-container>
-      <ng-container matColumnDef="error">
-        <th mat-header-cell *matHeaderCellDef>Błędy</th>
-        <td mat-cell *matCellDef="let row">{{ row.error }}</td>
-      </ng-container>
-      <ng-container matColumnDef="warn">
-        <th mat-header-cell *matHeaderCellDef>Ostrzeżenia</th>
-        <td mat-cell *matCellDef="let row">{{ row.warn }}</td>
-      </ng-container>
-      <tr mat-header-row *matHeaderRowDef="sourceColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: sourceColumns"></tr>
-      <tr class="empty-row" *matNoDataRow>
-        <td [attr.colspan]="sourceColumns.length">Brak danych</td>
-      </tr>
-    </table>
+    <div class="panel-body">
+      <table mat-table [dataSource]="store.topSources()">
+        <ng-container matColumnDef="source">
+          <th mat-header-cell *matHeaderCellDef>Źródło</th>
+          <td mat-cell *matCellDef="let row">{{ row.source }}</td>
+        </ng-container>
+        <ng-container matColumnDef="error">
+          <th mat-header-cell *matHeaderCellDef>Błędy</th>
+          <td mat-cell *matCellDef="let row">{{ row.error }}</td>
+        </ng-container>
+        <ng-container matColumnDef="warn">
+          <th mat-header-cell *matHeaderCellDef>Ostrzeżenia</th>
+          <td mat-cell *matCellDef="let row">{{ row.warn }}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="sourceColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: sourceColumns"></tr>
+        <tr class="empty-row" *matNoDataRow>
+          <td [attr.colspan]="sourceColumns.length">Brak danych</td>
+        </tr>
+      </table>
+    </div>
   </section>
 } @else if (store.error(); as error) {
   <p class="error" role="alert">Nie udało się pobrać danych: {{ error }}</p>

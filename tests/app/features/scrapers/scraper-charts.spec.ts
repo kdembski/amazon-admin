@@ -1,5 +1,9 @@
-import { toScraperSeries } from '@app/features/scrapers/scraper-charts';
-import { ScraperSeries } from '@app/types/api-dtos';
+import {
+  toRequestTiles,
+  toScraperSeries,
+  toScraperStatuses,
+} from '@app/features/scrapers/scraper-charts';
+import { ScraperMetricSummary, ScraperSeries } from '@app/types/api-dtos';
 
 const range = {
   from: new Date('2026-10-26T10:00:00.000Z'),
@@ -40,5 +44,64 @@ describe('toScraperSeries', () => {
     const [pdp] = toScraperSeries(series, range, 'day', 'wastedPercent');
 
     expect(pdp.points[0].value).toBe(32.5);
+  });
+});
+
+describe('toRequestTiles', () => {
+  const summary = (scraper: string, requests: number, previousRequests: number) =>
+    ({ scraper, requests, previousRequests }) as ScraperMetricSummary;
+
+  it('sums the requests of all scrapers with the change of each', () => {
+    expect(
+      toRequestTiles([summary('amazon-pdp', 300, 200), summary('amazon-plp', 100, 0)]),
+    ).toEqual([
+      {
+        label: 'Requesty',
+        value: 400,
+        change: 100,
+        details: [
+          { label: 'amazon-pdp', value: 300, change: 50 },
+          { label: 'amazon-plp', value: 100, change: null },
+        ],
+      },
+    ]);
+  });
+});
+
+describe('toScraperStatuses', () => {
+  const now = new Date('2026-10-26T12:00:00.000Z');
+
+  it('marks a scraper silent for more than 5 minutes as stopped', () => {
+    expect(
+      toScraperStatuses(
+        [
+          { scraper: 'amazon-pdp', lastReportAt: '2026-10-26T11:58:30.000Z' },
+          { scraper: 'amazon-plp', lastReportAt: '2026-10-26T11:40:00.000Z' },
+        ],
+        now,
+      ),
+    ).toEqual([
+      {
+        scraper: 'amazon-pdp',
+        lastReportAt: new Date('2026-10-26T11:58:30.000Z'),
+        minutesAgo: 1,
+        stopped: false,
+      },
+      {
+        scraper: 'amazon-plp',
+        lastReportAt: new Date('2026-10-26T11:40:00.000Z'),
+        minutesAgo: 20,
+        stopped: true,
+      },
+    ]);
+  });
+
+  it('shows 0 minutes for a report stamped after the load', () => {
+    const [status] = toScraperStatuses(
+      [{ scraper: 'amazon-pdp', lastReportAt: '2026-10-26T12:00:05.000Z' }],
+      now,
+    );
+
+    expect(status).toMatchObject({ minutesAgo: 0, stopped: false });
   });
 });

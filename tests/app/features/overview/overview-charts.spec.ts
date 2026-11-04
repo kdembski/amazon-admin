@@ -2,7 +2,7 @@ import {
   toAnomalySeries,
   toLogSeries,
   toScrapedSeries,
-  toTiles,
+  toSummaryTiles,
 } from '@app/features/overview/overview-charts';
 import { ActivityStatsDto, LogStatsDto } from '@app/types/api-dtos';
 
@@ -29,6 +29,8 @@ const activity: ActivityStatsDto = {
   ],
   totals: { ad_scraped: 40, country_outlier_sent: 3, price_drop_sent: 4 },
   previousTotals: { ad_scraped: 20, country_outlier_sent: 0, price_drop_sent: 8 },
+  comparable: { minPrices: 3, total: 10, previousTotal: 5 },
+  countryOutlierChannels: [{ id: '1', name: 'outliers-de' }],
 };
 
 const logs: LogStatsDto = {
@@ -69,10 +71,10 @@ describe('toScrapedSeries', () => {
 });
 
 describe('toAnomalySeries', () => {
-  it('returns the country outlier channels in order and the price drops', () => {
+  it('returns the country outlier channels in order by name, or id without one, and the price drops', () => {
     expect(toAnomalySeries(activity, range, 'hour').map((s) => s.label)).toEqual([
-      'Country outlier 1',
-      'Country outlier 3',
+      'Country outlier outliers-de',
+      'Country outlier #3',
       'Price drop',
     ]);
   });
@@ -93,14 +95,47 @@ describe('toLogSeries', () => {
   });
 });
 
-describe('toTiles', () => {
-  it('returns the five totals with their previous values', () => {
-    expect(toTiles(activity, logs)).toEqual([
-      { label: 'Zebrane ogłoszenia', value: 40, previous: 20 },
-      { label: 'Country outliers', value: 3, previous: 0 },
-      { label: 'Price drops', value: 4, previous: 8 },
-      { label: 'Błędy', value: 2, previous: 1 },
-      { label: 'Ostrzeżenia', value: 0, previous: 5 },
+describe('toSummaryTiles', () => {
+  it('returns the totals with their change, the comparable ads and the outliers per channel', () => {
+    expect(toSummaryTiles(activity)).toEqual([
+      {
+        label: 'Zebrane ogłoszenia',
+        value: 40,
+        change: 100,
+        details: [{ label: '3+ cen', value: 10, change: 100 }],
+      },
+      {
+        label: 'Country outliers',
+        value: 3,
+        change: null,
+        details: [
+          { label: 'outliers-de', value: 1, change: null },
+          { label: '#3', value: 2, change: null },
+        ],
+      },
+      { label: 'Price drops', value: 4, change: -50, details: [] },
     ]);
+  });
+
+  it('lists the channels of the settings first, in their order, with 0 without outliers', () => {
+    const [, outliers] = toSummaryTiles({
+      ...activity,
+      countryOutlierChannels: [
+        { id: '5', name: 'outliers-pl' },
+        { id: '3', name: 'outliers-fr' },
+      ],
+    });
+
+    expect(outliers.details.map((detail) => [detail.label, detail.value])).toEqual([
+      ['outliers-pl', 0],
+      ['outliers-fr', 2],
+      ['#1', 1],
+    ]);
+  });
+
+  it('leaves out the comparable ads without the minPrices setting', () => {
+    const [scraped] = toSummaryTiles({ ...activity, comparable: undefined });
+
+    expect(scraped.details).toEqual([]);
   });
 });

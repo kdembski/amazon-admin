@@ -6,7 +6,7 @@ import { withPolling } from '@app/shared/polling/with-polling';
 import { granularity } from '@app/shared/time-range/time-range';
 import { ScraperChartField, ScrapersData } from '@app/types/scrapers';
 import { TimeRange } from '@app/types/time-range';
-import { toScraperSeries } from './scraper-charts';
+import { toScraperSeries, toScraperStatuses } from './scraper-charts';
 
 export const ScrapersStore = signalStore(
   withPolling(() => {
@@ -14,9 +14,13 @@ export const ScrapersStore = signalStore(
 
     // The range travels with the data so the charts span exactly what was loaded.
     return (range: TimeRange) => {
-      return forkJoin({ summaries: api.getSummaries(range), series: api.getSeries(range) }).pipe(
-        map((loaded): ScrapersData => ({ ...loaded, range })),
-      );
+      return forkJoin({
+        summaries: api.getSummaries(range),
+        series: api.getSeries(range),
+        countries: api.getBreakdown(range, 'country'),
+        flows: api.getBreakdown(range, 'flow'),
+        statuses: api.getStatuses(),
+      }).pipe(map((loaded): ScrapersData => ({ ...loaded, range, loadedAt: new Date() })));
     };
   }),
   withComputed(({ data }) => {
@@ -36,6 +40,13 @@ export const ScrapersStore = signalStore(
     return {
       unit,
       rows: computed(() => data()?.summaries ?? []),
+      countries: computed(() => data()?.countries ?? []),
+      flows: computed(() => data()?.flows ?? []),
+      statuses: computed(() => {
+        const loaded = data();
+
+        return loaded ? toScraperStatuses(loaded.statuses, loaded.loadedAt) : [];
+      }),
       itemsSeries: chart('itemsPerSecond'),
       wastedSeries: chart('wastedPercent'),
       captchaSeries: chart('captchaPercent'),

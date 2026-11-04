@@ -85,15 +85,12 @@ describe('TimeRangePicker', () => {
     expect(picker.days()).toEqual([new Date(2026, 9, 20), new Date(2026, 9, 22)]);
   });
 
-  it('renders the preset buttons', async () => {
-    const { fixture } = setup();
+  it('renders the preset select with the selected preset', async () => {
+    const { fixture } = setup({ preset: '7d' });
     await fixture.whenStable();
 
-    const text = (fixture.nativeElement as HTMLElement).textContent;
-    expect(text).toContain('24h');
-    expect(text).toContain('7 dni');
-    expect(text).toContain('30 dni');
-    expect(fixture.nativeElement.querySelector('mat-button-toggle-group')).not.toBeNull();
+    const select = (fixture.nativeElement as HTMLElement).querySelector('mat-select');
+    expect(select?.textContent).toContain('7 dni');
     expect(fixture.nativeElement.querySelector('mat-date-range-input')).not.toBeNull();
   });
 });

@@ -14,21 +14,18 @@
   }
 }
 
-.tiles {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
-  gap: 1rem;
+.panel h2 {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
-.panel {
+.panel-body {
   padding: 1rem;
   border: 1px solid var(--mat-sys-outline-variant);
   border-radius: var(--mat-sys-corner-medium);
-
-  h2 {
-    margin: 0 0 1rem;
-    font-size: 1rem;
-  }
+  background: var(--mat-sys-surface-container-low);
+  --mat-table-background-color: transparent;
 }
 
 .loading {

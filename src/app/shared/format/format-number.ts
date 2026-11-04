@@ -21,3 +21,7 @@ export const formatNumber = (value: number | null, digits = 2) => {
 export const formatSigned = (value: number, digits = 2) => {
   return `${value > 0 ? '+' : ''}${formatNumber(value, digits)}`;
 };
+
+export const formatMegabytes = (bytes: number) => {
+  return formatNumber(bytes / 1_048_576, 1);
+};

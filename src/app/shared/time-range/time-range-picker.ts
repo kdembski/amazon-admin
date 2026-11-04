@@ -1,8 +1,8 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import { addDays, differenceInCalendarDays, startOfDay } from 'date-fns';
 import { RangePreset } from '@app/types/time-range';
 import { MAX_RANGE_MS } from './time-range';
@@ -10,7 +10,7 @@ import { TimeRangeStore } from './time-range-store';
 
 @Component({
   selector: 'app-time-range-picker',
-  imports: [MatButtonToggleModule, MatDatepickerModule, MatFormFieldModule],
+  imports: [MatDatepickerModule, MatFormFieldModule, MatSelectModule],
   providers: [provideNativeDateAdapter(), { provide: MAT_DATE_LOCALE, useValue: 'pl-PL' }],
   templateUrl: './time-range-picker.html',
   styleUrl: './time-range-picker.scss',

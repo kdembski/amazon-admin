@@ -1,7 +1,8 @@
 import { toChartPoints } from '@app/shared/charts/to-chart-points';
-import { ActivityStatsDto, LogStatsDto } from '@app/types/api-dtos';
+import { ActivityEventType, ActivityStatsDto, LogStatsDto } from '@app/types/api-dtos';
+import { stat } from '@app/shared/summary/summary';
 import { ChartSeries } from '@app/types/chart';
-import { Tile } from '@app/types/overview';
+import { SummaryStat, SummaryTile } from '@app/types/summary';
 import { Granularity, TimeRange } from '@app/types/time-range';
 
 const LOG_LABELS = { error: 'Błędy', warn: 'Ostrzeżenia' };
@@ -18,15 +19,26 @@ export const toScrapedSeries = (
   ];
 };
 
+// A channel no longer in the settings keeps only its id.
+const channelName = (dto: ActivityStatsDto, channel: string | null) => {
+  return dto.countryOutlierChannels.find(({ id }) => id === channel)?.name ?? `#${channel}`;
+};
+
+const outliersByChannel = (dto: ActivityStatsDto) => {
+  return dto.series
+    .filter((series) => series.type === 'country_outlier_sent')
+    .sort((a, b) => (a.channel ?? '').localeCompare(b.channel ?? '', undefined, { numeric: true }));
+};
+
 export const toAnomalySeries = (
   dto: ActivityStatsDto,
   range: TimeRange,
   unit: Granularity,
 ): ChartSeries[] => {
-  const outliers = dto.series
-    .filter((series) => series.type === 'country_outlier_sent')
-    .sort((a, b) => (a.channel ?? '').localeCompare(b.channel ?? '', undefined, { numeric: true }))
-    .map((series) => ({ label: `Country outlier ${series.channel}`, points: series.points }));
+  const outliers = outliersByChannel(dto).map((series) => ({
+    label: `Country outlier ${channelName(dto, series.channel)}`,
+    points: series.points,
+  }));
   const drops = dto.series
     .filter((series) => series.type === 'price_drop_sent')
     .map((series) => ({ label: 'Price drop', points: series.points }));
@@ -48,18 +60,39 @@ export const toLogSeries = (
   }));
 };
 
-export const toTiles = (activity: ActivityStatsDto, logs: LogStatsDto): Tile[] => {
-  const tile = (label: string, value: number, previous: number) => ({ label, value, previous });
+export const toSummaryTiles = (dto: ActivityStatsDto): SummaryTile[] => {
+  const { totals, previousTotals, comparable } = dto;
+  const tile = (label: string, type: ActivityEventType, details: SummaryStat[] = []) => {
+    return { ...stat(label, totals[type], previousTotals[type]), details };
+  };
+  const outliers = outliersByChannel(dto);
+  // Channels of the settings first, in their order, so the ones without outliers show 0.
+  const channels = [
+    ...new Set([
+      ...dto.countryOutlierChannels.map(({ id }) => id),
+      ...outliers.map((series) => series.channel ?? ''),
+    ]),
+  ];
+  // The API has no previous totals per channel, so channels show no change.
+  const sent = (channel: string) => {
+    const points = outliers.find((series) => series.channel === channel)?.points ?? [];
+
+    return stat(
+      channelName(dto, channel),
+      points.reduce((sum, point) => sum + point.value, 0),
+      null,
+    );
+  };
 
   return [
-    tile('Zebrane ogłoszenia', activity.totals.ad_scraped, activity.previousTotals.ad_scraped),
     tile(
-      'Country outliers',
-      activity.totals.country_outlier_sent,
-      activity.previousTotals.country_outlier_sent,
+      'Zebrane ogłoszenia',
+      'ad_scraped',
+      comparable
+        ? [stat(`${comparable.minPrices}+ cen`, comparable.total, comparable.previousTotal)]
+        : [],
     ),
-    tile('Price drops', activity.totals.price_drop_sent, activity.previousTotals.price_drop_sent),
-    tile(LOG_LABELS.error, logs.totals.error, logs.previousTotals.error),
-    tile(LOG_LABELS.warn, logs.totals.warn, logs.previousTotals.warn),
+    tile('Country outliers', 'country_outlier_sent', channels.map(sent)),
+    tile('Price drops', 'price_drop_sent'),
   ];
 };
