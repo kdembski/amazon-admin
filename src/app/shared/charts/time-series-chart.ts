@@ -17,8 +17,16 @@ const COLORS = [
   '#84cc16',
 ];
 
+// Material tokens are light-dark() pairs, which only a real color property resolves for the canvas.
 const cssVar = (name: string, fallback: string) => {
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+  const probe = document.createElement('span');
+
+  probe.style.color = `var(${name}, ${fallback})`;
+  document.body.append(probe);
+  const color = getComputedStyle(probe).color;
+  probe.remove();
+
+  return color;
 };
 
 @Component({
