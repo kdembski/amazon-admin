@@ -14,6 +14,11 @@ export class SummaryPanels {
 
   protected readonly formatNumber = formatNumber;
 
+  // Two independent columns, so a long tile does not stretch its neighbour.
+  protected columns(tiles: SummaryTile[]) {
+    return [0, 1].map((column) => tiles.filter((_, index) => index % 2 === column));
+  }
+
   // Without any change in the details, e.g. country outlier channels, the change column goes away.
   protected hasChange(tile: SummaryTile) {
     return tile.details.some((detail) => detail.change !== null);

@@ -12,8 +12,20 @@ class Blank {}
 
 const activity: ActivityStatsDto = {
   series: [],
-  totals: { ad_scraped: 1234, country_outlier_sent: 2, price_drop_sent: 3 },
-  previousTotals: { ad_scraped: 1000, country_outlier_sent: 0, price_drop_sent: 0 },
+  totals: {
+    ad_scraped: 1234,
+    country_outlier_sent: 2,
+    price_drop_sent: 3,
+    ad_created: 0,
+    ad_deleted: 0,
+  },
+  previousTotals: {
+    ad_scraped: 1000,
+    country_outlier_sent: 0,
+    price_drop_sent: 0,
+    ad_created: 0,
+    ad_deleted: 0,
+  },
   countryOutlierChannels: [],
 };
 
@@ -50,7 +62,9 @@ describe('Overview', () => {
     expect(summary.textContent).toContain('Last hour');
     expect(summary.textContent).toContain('Last 24 h');
     expect(summary.textContent).not.toContain('Errors');
-    expect(tiles).toHaveLength(6);
+    expect(tiles).toHaveLength(8);
+    expect(tiles[1]).toContain('Ad balance');
+    expect(tiles[3]).toContain('Price drops');
     expect(tiles[0]).toContain('Scraped ads');
     expect(tiles[0]).toContain('1234');
     expect(tiles[0]).toContain('+23%');

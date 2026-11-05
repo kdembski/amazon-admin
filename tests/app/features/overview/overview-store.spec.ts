@@ -15,8 +15,20 @@ const activity: ActivityStatsDto = {
   series: [
     { type: 'ad_scraped', channel: null, points: [{ t: '2026-10-26T09:00:00.000Z', value: 7 }] },
   ],
-  totals: { ad_scraped: 7, country_outlier_sent: 0, price_drop_sent: 0 },
-  previousTotals: { ad_scraped: 5, country_outlier_sent: 0, price_drop_sent: 0 },
+  totals: {
+    ad_scraped: 7,
+    country_outlier_sent: 0,
+    price_drop_sent: 0,
+    ad_created: 0,
+    ad_deleted: 0,
+  },
+  previousTotals: {
+    ad_scraped: 5,
+    country_outlier_sent: 0,
+    price_drop_sent: 0,
+    ad_created: 0,
+    ad_deleted: 0,
+  },
   countryOutlierChannels: [],
 };
 
@@ -66,6 +78,7 @@ describe('OverviewStore', () => {
     expect(store.unit()).toBe('hour');
     expect(store.scrapedSeries()[0].points).toHaveLength(24);
     expect(store.anomalySeries()).toEqual([]);
+    expect(store.adChangeSeries().map((s) => s.label)).toEqual(['New ads', 'Deleted ads']);
     expect(store.logSeries().map((s) => s.label)).toEqual(['Errors', 'Warnings']);
     expect(store.topSources()).toEqual([{ source: 'A', error: 1, warn: 2 }]);
   });

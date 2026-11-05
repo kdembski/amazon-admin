@@ -24,6 +24,13 @@
   </section>
 
   <section class="panel">
+    <h2>New and deleted ads</h2>
+    <div class="panel-body">
+      <app-time-series-chart [series]="store.adChangeSeries()" type="bar" [unit]="store.unit()" />
+    </div>
+  </section>
+
+  <section class="panel">
     <h2>Sent anomalies</h2>
     <div class="panel-body">
       <app-time-series-chart

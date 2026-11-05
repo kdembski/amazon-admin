@@ -45,7 +45,7 @@ describe('SummaryPanels', () => {
     expect(second.querySelector('.details')).toBeNull();
   });
 
-  it('lets a tile with more than 2 details take two rows', async () => {
+  it('puts the tiles alternately into two columns', async () => {
     const detail = (label: string) => ({ label, value: 1, change: null });
     const element = await render([
       {
@@ -58,12 +58,15 @@ describe('SummaryPanels', () => {
             change: null,
             details: [detail('a'), detail('b'), detail('c')],
           },
+          { label: 'Balance', value: 1, change: null, details: [] },
         ],
       },
     ]);
 
-    const tall = [...element.querySelectorAll('.tile')].map((t) => t.classList.contains('tall'));
-    expect(tall).toEqual([false, true]);
+    const columns = [...element.querySelectorAll('.column')].map((column) =>
+      [...column.querySelectorAll('.tile .label')].map((label) => label.textContent),
+    );
+    expect(columns).toEqual([['Scraped', 'Balance'], ['Outliers']]);
   });
 
   it('drops the change column of details without any change', async () => {

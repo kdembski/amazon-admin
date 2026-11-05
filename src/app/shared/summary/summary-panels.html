@@ -10,30 +10,36 @@
   <section class="panel">
     <h2>{{ period.name }}</h2>
     <div class="tiles">
-      @for (tile of period.tiles; track tile.label) {
-        <div class="tile" [class.tall]="tile.details.length > 2">
-          <span class="label">{{ tile.label }}</span>
-          <div class="headline">
-            <strong class="value">{{ formatNumber(tile.value, 0) }}</strong>
-            <ng-container *ngTemplateOutlet="changeBadge; context: { $implicit: tile.change }" />
-          </div>
-          @if (tile.details.length) {
-            @let withChange = hasChange(tile);
-            <dl class="details" [class.with-change]="withChange">
-              @for (detail of tile.details; track detail.label) {
-                <div class="detail">
-                  <dt>{{ detail.label }}</dt>
-                  <dd class="value">{{ formatNumber(detail.value, 0) }}</dd>
-                  @if (withChange) {
-                    <dd>
-                      <ng-container
-                        *ngTemplateOutlet="changeBadge; context: { $implicit: detail.change }"
-                      />
-                    </dd>
+      @for (column of columns(period.tiles); track $index) {
+        <div class="column">
+          @for (tile of column; track tile.label) {
+            <div class="tile">
+              <span class="label">{{ tile.label }}</span>
+              <div class="headline">
+                <strong class="value">{{ formatNumber(tile.value, 0) }}</strong>
+                <ng-container
+                  *ngTemplateOutlet="changeBadge; context: { $implicit: tile.change }"
+                />
+              </div>
+              @if (tile.details.length) {
+                @let withChange = hasChange(tile);
+                <dl class="details" [class.with-change]="withChange">
+                  @for (detail of tile.details; track detail.label) {
+                    <div class="detail">
+                      <dt>{{ detail.label }}</dt>
+                      <dd class="value">{{ formatNumber(detail.value, 0) }}</dd>
+                      @if (withChange) {
+                        <dd>
+                          <ng-container
+                            *ngTemplateOutlet="changeBadge; context: { $implicit: detail.change }"
+                          />
+                        </dd>
+                      }
+                    </div>
                   }
-                </div>
+                </dl>
               }
-            </dl>
+            </div>
           }
         </div>
       }

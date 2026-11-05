@@ -16,8 +16,20 @@ const day = { from: new Date('2026-10-25T10:00:00.000Z'), to: now };
 
 const activity = (scraped: number): ActivityStatsDto => ({
   series: [],
-  totals: { ad_scraped: scraped, country_outlier_sent: 0, price_drop_sent: 0 },
-  previousTotals: { ad_scraped: 1, country_outlier_sent: 0, price_drop_sent: 0 },
+  totals: {
+    ad_scraped: scraped,
+    country_outlier_sent: 0,
+    price_drop_sent: 0,
+    ad_created: 0,
+    ad_deleted: 0,
+  },
+  previousTotals: {
+    ad_scraped: 1,
+    country_outlier_sent: 0,
+    price_drop_sent: 0,
+    ad_created: 0,
+    ad_deleted: 0,
+  },
   countryOutlierChannels: [],
 });
 

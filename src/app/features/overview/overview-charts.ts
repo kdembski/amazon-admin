@@ -47,6 +47,21 @@ export const toAnomalySeries = (
   }));
 };
 
+export const toAdChangeSeries = (
+  dto: ActivityStatsDto,
+  range: TimeRange,
+  unit: Granularity,
+): ChartSeries[] => {
+  const points = (type: ActivityEventType) => {
+    return dto.series.find((series) => series.type === type)?.points ?? [];
+  };
+
+  return [
+    { label: 'New ads', points: toChartPoints(points('ad_created'), range, unit) },
+    { label: 'Deleted ads', points: toChartPoints(points('ad_deleted'), range, unit) },
+  ];
+};
+
 export const toLogSeries = (
   dto: LogStatsDto,
   range: TimeRange,
@@ -91,6 +106,14 @@ export const toSummaryTiles = (dto: ActivityStatsDto): SummaryTile[] => {
         : [],
     ),
     tile('Country outliers', 'country_outlier_sent', channels.map(sent)),
+    // A change of a balance that can cross 0 means nothing, so only its parts show one.
+    {
+      ...stat('Ad balance', totals.ad_created - totals.ad_deleted, null),
+      details: [
+        stat('New ads', totals.ad_created, previousTotals.ad_created),
+        stat('Deleted ads', totals.ad_deleted, previousTotals.ad_deleted),
+      ],
+    },
     tile('Price drops', 'price_drop_sent'),
   ];
 };

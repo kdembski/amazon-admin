@@ -1,4 +1,5 @@
 import {
+  toAdChangeSeries,
   toAnomalySeries,
   toLogSeries,
   toScrapedSeries,
@@ -27,8 +28,20 @@ const activity: ActivityStatsDto = {
     },
     { type: 'price_drop_sent', channel: null, points: [{ t: hour(11).toISOString(), value: 4 }] },
   ],
-  totals: { ad_scraped: 40, country_outlier_sent: 3, price_drop_sent: 4 },
-  previousTotals: { ad_scraped: 20, country_outlier_sent: 0, price_drop_sent: 8 },
+  totals: {
+    ad_scraped: 40,
+    country_outlier_sent: 3,
+    price_drop_sent: 4,
+    ad_created: 6,
+    ad_deleted: 2,
+  },
+  previousTotals: {
+    ad_scraped: 20,
+    country_outlier_sent: 0,
+    price_drop_sent: 8,
+    ad_created: 3,
+    ad_deleted: 0,
+  },
   comparable: { minPrices: 3, total: 10, previousTotal: 5 },
   countryOutlierChannels: [{ id: '1', name: 'outliers-de' }],
 };
@@ -86,6 +99,26 @@ describe('toAnomalySeries', () => {
   });
 });
 
+describe('toAdChangeSeries', () => {
+  it('returns the new and the deleted ads, zero without events', () => {
+    const series = toAdChangeSeries(
+      {
+        ...activity,
+        series: [
+          { type: 'ad_created', channel: null, points: [{ t: hour(11).toISOString(), value: 6 }] },
+        ],
+      },
+      range,
+      'hour',
+    );
+
+    expect(series.map((s) => [s.label, s.points.map((p) => p.value)])).toEqual([
+      ['New ads', [0, 6, 0]],
+      ['Deleted ads', [0, 0, 0]],
+    ]);
+  });
+});
+
 describe('toLogSeries', () => {
   it('returns errors and warnings', () => {
     const series = toLogSeries(logs, range, 'hour');
@@ -111,6 +144,15 @@ describe('toSummaryTiles', () => {
         details: [
           { label: 'outliers-de', value: 1, change: null },
           { label: '#3', value: 2, change: null },
+        ],
+      },
+      {
+        label: 'Ad balance',
+        value: 4,
+        change: null,
+        details: [
+          { label: 'New ads', value: 6, change: 100 },
+          { label: 'Deleted ads', value: 2, change: null },
         ],
       },
       { label: 'Price drops', value: 4, change: -50, details: [] },

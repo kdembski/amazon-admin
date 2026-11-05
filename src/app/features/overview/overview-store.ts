@@ -6,7 +6,7 @@ import { withPolling } from '@app/shared/polling/with-polling';
 import { granularity } from '@app/shared/time-range/time-range';
 import { OverviewData } from '@app/types/overview';
 import { TimeRange } from '@app/types/time-range';
-import { toAnomalySeries, toLogSeries, toScrapedSeries } from './overview-charts';
+import { toAdChangeSeries, toAnomalySeries, toLogSeries, toScrapedSeries } from './overview-charts';
 
 export const OverviewStore = signalStore(
   withPolling(() => {
@@ -37,6 +37,10 @@ export const OverviewStore = signalStore(
       unit,
       scrapedSeries: chart((loaded) => toScrapedSeries(loaded.activity, loaded.range, unit()), []),
       anomalySeries: chart((loaded) => toAnomalySeries(loaded.activity, loaded.range, unit()), []),
+      adChangeSeries: chart(
+        (loaded) => toAdChangeSeries(loaded.activity, loaded.range, unit()),
+        [],
+      ),
       logSeries: chart((loaded) => toLogSeries(loaded.logs, loaded.range, unit()), []),
       topSources: chart((loaded) => loaded.logs.topSources, []),
     };

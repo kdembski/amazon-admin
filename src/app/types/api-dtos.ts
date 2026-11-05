@@ -1,6 +1,7 @@
 // Copies of amazon-server DTOs (src/modules/monitoring/dtos); keep field names in sync.
 
-export type ActivityEventType = 'ad_scraped' | 'country_outlier_sent' | 'price_drop_sent';
+export type ActivityEventType =
+  'ad_scraped' | 'country_outlier_sent' | 'price_drop_sent' | 'ad_created' | 'ad_deleted';
 export type LogLevel = 'error' | 'warn';
 
 export interface TimePoint {
