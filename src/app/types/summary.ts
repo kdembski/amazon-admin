@@ -6,6 +6,8 @@ export interface SummaryStat {
 }
 
 export interface SummaryTile extends SummaryStat {
+  // Decimal places of the tile and its details; 0 when absent.
+  digits?: number;
   // A breakdown of the tile, e.g. one stat per country outlier channel.
   details: SummaryStat[];
 }

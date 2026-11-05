@@ -23,6 +23,10 @@ const summary = (scraper: string, kbPerItem: number | null): ScraperMetricSummar
   bytesOut: 0,
   connections: 300,
   previousRequests: 600,
+  proxyBytes: 2_097_152,
+  previousProxyBytes: 1_048_576,
+  directBytes: 1_048_576,
+  previousDirectBytes: 0,
 });
 
 const render = async (summaries: ScraperMetricSummary[], statuses: ScraperStatus[] = []) => {
@@ -83,13 +87,25 @@ describe('Scrapers', () => {
     ]);
   });
 
-  it('shows the requests of the last hour and the last 24 h', async () => {
+  it('shows requests, requests/s, items/s and transfer of the last hour and the last 24 h', async () => {
     const element = await render([summary('amazon-pdp-1', 9.5)]);
 
     const tiles = [...element.querySelectorAll('.tile')].map((tile) => tile.textContent);
-    expect(tiles).toHaveLength(2);
+    expect(tiles).toHaveLength(8);
+    // Two columns: Requests and Requests/s on the left, Items/s and Transfer on the right.
     expect(tiles[0]).toContain('Requests');
     expect(tiles[0]).toContain('+100%');
+    expect(tiles[0]).not.toContain('amazon-pdp-1');
+    expect(tiles[1]).toContain('Requests/s');
+    expect(tiles[1]).toContain('amazon-pdp-1');
+    expect(tiles[1]).toContain('0,3');
+    expect(tiles[2]).toContain('Items/s');
+    expect(tiles[2]).toContain('2,50');
+    expect(tiles[2]).toContain('-11%');
+    expect(tiles[3]).toContain('Transfer in + out (MB)');
+    expect(tiles[3]).toContain('3,0');
+    expect(tiles[3]).toContain('Proxy');
+    expect(tiles[3]).toContain('Direct');
   });
 
   it('marks a scraper without recent reports as stopped', async () => {

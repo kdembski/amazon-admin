@@ -45,6 +45,26 @@ describe('SummaryPanels', () => {
     expect(second.querySelector('.details')).toBeNull();
   });
 
+  it('formats the tile and its details with the decimal places of the tile', async () => {
+    const element = await render([
+      {
+        name: 'Last hour',
+        tiles: [
+          {
+            label: 'Items/s',
+            value: 1.5,
+            change: null,
+            digits: 2,
+            details: [{ label: 'amazon-pdp', value: 0.25, change: null }],
+          },
+        ],
+      },
+    ]);
+
+    expect(element.querySelector('.headline .value')?.textContent).toBe('1,50');
+    expect(element.querySelector('.detail .value')?.textContent).toBe('0,25');
+  });
+
   it('puts the tiles alternately into two columns', async () => {
     const detail = (label: string) => ({ label, value: 1, change: null });
     const element = await render([

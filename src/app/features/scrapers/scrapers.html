@@ -1,6 +1,6 @@
 <h1>Scrapers</h1>
 
-<section class="summary" aria-label="Request summary">
+<section class="summary" aria-label="Scraper summary">
   @if (summary.data(); as periods) {
     <app-summary-panels [periods]="periods" />
   } @else if (summary.error(); as error) {

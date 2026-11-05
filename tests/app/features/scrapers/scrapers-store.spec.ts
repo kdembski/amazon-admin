@@ -28,6 +28,10 @@ const summary: ScraperMetricSummary = {
   bytesOut: 1024,
   connections: 20,
   previousRequests: 50,
+  proxyBytes: 2048,
+  previousProxyBytes: 0,
+  directBytes: 1024,
+  previousDirectBytes: 0,
 };
 
 const country: ScraperBreakdown = { ...summary, group: 'de' };

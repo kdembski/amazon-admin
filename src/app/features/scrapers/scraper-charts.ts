@@ -39,17 +39,58 @@ export const toScraperSeries = (
   });
 };
 
-export const toRequestTiles = (summaries: ScraperMetricSummary[]): SummaryTile[] => {
-  const total = (field: 'requests' | 'previousRequests') => {
-    return summaries.reduce((sum, summary) => sum + summary[field], 0);
+const megabytes = (bytes: number) => bytes / 1_048_576;
+
+export const toScraperTiles = (
+  summaries: ScraperMetricSummary[],
+  range: TimeRange,
+): SummaryTile[] => {
+  const seconds = (range.to.getTime() - range.from.getTime()) / 1000;
+  const total = (field: (summary: ScraperMetricSummary) => number) => {
+    return summaries.reduce((sum, summary) => sum + field(summary), 0);
   };
+  const tile = (
+    label: string,
+    digits: number,
+    value: (summary: ScraperMetricSummary) => number,
+    previous: (summary: ScraperMetricSummary) => number,
+  ): SummaryTile => {
+    return {
+      ...stat(label, total(value), total(previous)),
+      digits,
+      details: summaries.map((summary) => stat(summary.scraper, value(summary), previous(summary))),
+    };
+  };
+  const proxy = megabytes(total((summary) => summary.proxyBytes));
+  const previousProxy = megabytes(total((summary) => summary.previousProxyBytes));
+  const direct = megabytes(total((summary) => summary.directBytes));
+  const previousDirect = megabytes(total((summary) => summary.previousDirectBytes));
 
   return [
     {
-      ...stat('Requests', total('requests'), total('previousRequests')),
-      details: summaries.map((summary) =>
-        stat(summary.scraper, summary.requests, summary.previousRequests),
+      ...stat(
+        'Requests',
+        total((summary) => summary.requests),
+        total((summary) => summary.previousRequests),
       ),
+      details: [],
+    },
+    tile(
+      'Items/s',
+      2,
+      (summary) => summary.itemsPerSecond,
+      (summary) => summary.itemsPerSecond - summary.itemsPerSecondDiff,
+    ),
+    tile(
+      'Requests/s',
+      1,
+      (summary) => summary.requests / seconds,
+      (summary) => summary.previousRequests / seconds,
+    ),
+    {
+      ...stat('Transfer in + out (MB)', proxy + direct, previousProxy + previousDirect),
+      digits: 1,
+      details: [stat('Proxy', proxy, previousProxy), stat('Direct', direct, previousDirect)],
     },
   ];
 };
