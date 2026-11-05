@@ -78,6 +78,7 @@ export class TimeSeriesChart {
 
     return {
       maintainAspectRatio: false,
+      animation: false as const,
       interaction: { mode: 'index' as const, intersect: false },
       plugins: { legend: { display: this.series().length > 1, labels: { color: text } } },
       scales: {

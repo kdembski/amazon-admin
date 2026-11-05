@@ -44,6 +44,7 @@ describe('TimeSeriesChart', () => {
     expect(scales.x).toMatchObject({ type: 'time', stacked: true, time: { unit: 'day' } });
     expect(scales.y).toMatchObject({ stacked: true, beginAtZero: true });
     expect(chart.options().plugins.legend.display).toBe(true);
+    expect(chart.options().animation).toBe(false);
   });
 
   it('hides the legend for a single series', async () => {
