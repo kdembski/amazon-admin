@@ -43,6 +43,13 @@ describe('TimeSeriesChart', () => {
     const scales = chart.options().scales;
     expect(scales.x).toMatchObject({ type: 'time', stacked: true, time: { unit: 'day' } });
     expect(scales.y).toMatchObject({ stacked: true, beginAtZero: true });
+    expect(chart.options().plugins.legend.display).toBe(true);
+  });
+
+  it('hides the legend for a single series', async () => {
+    const { chart } = await render([{ label: 'A', points: [{ t, value: 1 }] }]);
+
+    expect(chart.options().plugins.legend.display).toBe(false);
   });
 
   it('is not stacked by default', async () => {
