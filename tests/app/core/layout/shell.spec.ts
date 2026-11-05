@@ -25,23 +25,13 @@ const links = (element: HTMLElement) => {
 };
 
 describe('Shell', () => {
-  it('renders the navigation links, the toolbar and the router outlet', async () => {
+  it('renders the navigation links and the router outlet', async () => {
     const element = await render('/');
 
     expect(links(element)).toEqual([
       ['Overview', '/'],
       ['Scrapers', '/scrapers'],
     ]);
-    expect(element.querySelector('header.toolbar app-time-range-picker')).not.toBeNull();
     expect(element.querySelector('router-outlet')).not.toBeNull();
-  });
-
-  it('keeps the selected range when switching views', async () => {
-    const element = await render('/?range=7d');
-
-    expect(links(element)).toEqual([
-      ['Overview', '/?range=7d'],
-      ['Scrapers', '/scrapers?range=7d'],
-    ]);
   });
 });

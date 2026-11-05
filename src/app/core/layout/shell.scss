@@ -10,7 +10,7 @@ nav {
   gap: 0.25rem;
   padding: 1rem 0.75rem;
   border-right: 1px solid var(--mat-sys-outline-variant);
-  background: var(--mat-sys-surface);
+  background: var(--mat-sys-surface-container-low);
 
   .brand {
     font-weight: 600;
@@ -36,13 +36,6 @@ nav {
 
 .content {
   min-width: 0;
-}
-
-.toolbar {
-  display: flex;
-  justify-content: flex-end;
-  padding: 0.75rem 1.5rem;
-  border-bottom: 1px solid var(--mat-sys-outline-variant);
 }
 
 main {

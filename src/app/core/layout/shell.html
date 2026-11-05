@@ -1,20 +1,12 @@
 <div class="layout">
   <nav aria-label="Main navigation">
     <span class="brand">Admin Panel</span>
-    <a
-      routerLink="/"
-      queryParamsHandling="preserve"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{ exact: true }"
-    >
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
       Overview
     </a>
-    <a routerLink="/scrapers" queryParamsHandling="preserve" routerLinkActive="active">Scrapers</a>
+    <a routerLink="/scrapers" routerLinkActive="active">Scrapers</a>
   </nav>
   <div class="content">
-    <header class="toolbar">
-      <app-time-range-picker />
-    </header>
     <main>
       <router-outlet />
     </main>

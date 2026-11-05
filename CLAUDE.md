@@ -100,7 +100,9 @@ npx ng build
   `withPolling(() => (range) => load)` from `shared/polling`.
 - HTTP clients: one stateless `<Name>ApiService` per server area in `core/api/` (`stats-api-service.ts`), one method per endpoint.
 - Copy API DTOs from amazon-server into `types/api-dtos.ts` with the same field names.
-- Query `from`/`to` as `Date.toISOString()`; ranges at most 30 days.
+- Query `from`/`to` as `Date.toISOString()`; ranges at most 30 days (the server limit and its log retention).
+- Every range-dependent panel has its own `RangePanel` with presets 1d, 7d, 30d (default 1d), backed by its own store;
+  no global range.
 - Poll every 60 s, paused while the tab is hidden.
 - Charts: hours for ranges up to 48 h, days in the browser time zone above.
 - Every new component, service, store and helper gets a `.spec.ts` under `tests/` at the path mirroring `src/`.

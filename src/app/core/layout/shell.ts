@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { TimeRangePicker } from '@app/shared/time-range/time-range-picker';
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterLink, RouterLinkActive, RouterOutlet, TimeRangePicker],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
 })

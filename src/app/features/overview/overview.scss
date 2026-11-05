@@ -3,41 +3,13 @@
   gap: 1.5rem;
 }
 
-.heading {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-
-  h1 {
-    margin: 0;
-    font-size: 1.5rem;
-  }
-}
-
-.panel h2 {
-  margin: 0 0 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.panel-body {
-  padding: 1rem;
-  border: 1px solid var(--mat-sys-outline-variant);
-  border-radius: var(--mat-sys-corner-medium);
-  background: var(--mat-sys-surface-container-low);
-  --mat-table-background-color: transparent;
+h1 {
+  margin: 0;
+  font-size: 1.5rem;
 }
 
 .loading {
   color: var(--mat-sys-on-surface-variant);
-}
-
-.stale {
-  padding: 0.25rem 0.5rem;
-  border-radius: var(--mat-sys-corner-small);
-  background: var(--mat-sys-tertiary-container);
-  color: var(--mat-sys-on-tertiary-container);
-  font-size: 0.875rem;
 }
 
 .error {

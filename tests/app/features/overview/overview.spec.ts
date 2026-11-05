@@ -70,6 +70,7 @@ describe('Overview', () => {
     expect(tiles[0]).toContain('+23%');
     expect(element.textContent).toContain('No data');
     expect(element.querySelector('table')?.textContent).toContain('AmazonAdService');
+    expect(element.querySelectorAll('app-range-panel mat-button-toggle-group')).toHaveLength(5);
   });
 
   it('shows the error of a first load that failed', async () => {
@@ -78,5 +79,6 @@ describe('Overview', () => {
 
     expect(element.querySelector('[role=alert]')?.textContent).toContain('503 Service Unavailable');
     expect(element.querySelector('.tile')).toBeNull();
+    expect(element.querySelectorAll('app-range-panel [role=alert]')).toHaveLength(3);
   });
 });

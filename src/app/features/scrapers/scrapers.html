@@ -1,9 +1,4 @@
-<header class="heading">
-  <h1>Scrapers</h1>
-  @if (store.staleSince(); as staleSince) {
-    <span class="stale">Stale since {{ staleSince | date: 'HH:mm' }}</span>
-  }
-</header>
+<h1>Scrapers</h1>
 
 <section aria-label="Request summary">
   @if (summary.data(); as periods) {
@@ -15,137 +10,120 @@
   }
 </section>
 
-@if (store.data()) {
-  <section class="panel">
-    <h2>Metric reporting</h2>
-    <div class="panel-body">
-      <table mat-table [dataSource]="store.statuses()">
-        <ng-container matColumnDef="scraper">
-          <th mat-header-cell *matHeaderCellDef>Scraper</th>
-          <td mat-cell *matCellDef="let row">{{ row.scraper }}</td>
-        </ng-container>
-        <ng-container matColumnDef="lastReportAt">
-          <th mat-header-cell *matHeaderCellDef>Last report</th>
-          <td mat-cell *matCellDef="let row">{{ row.lastReportAt | date: 'dd.MM HH:mm' }}</td>
-        </ng-container>
-        <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>Status</th>
-          <td mat-cell *matCellDef="let row">
-            @if (row.stopped) {
-              <span class="status stopped">No reports for {{ row.minutesAgo }} min</span>
-            } @else {
-              <span class="status ok">Reporting</span>
-            }
-          </td>
-        </ng-container>
-        <tr mat-header-row *matHeaderRowDef="statusColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: statusColumns"></tr>
-        <tr class="empty-row" *matNoDataRow>
-          <td [attr.colspan]="statusColumns.length">No reports in the last 7 days</td>
-        </tr>
-      </table>
-    </div>
-  </section>
+<app-range-panel heading="Metric reporting" [source]="statuses" [ranged]="false">
+  @if (statuses.data(); as rows) {
+    <table mat-table [dataSource]="rows">
+      <ng-container matColumnDef="scraper">
+        <th mat-header-cell *matHeaderCellDef>Scraper</th>
+        <td mat-cell *matCellDef="let row">{{ row.scraper }}</td>
+      </ng-container>
+      <ng-container matColumnDef="lastReportAt">
+        <th mat-header-cell *matHeaderCellDef>Last report</th>
+        <td mat-cell *matCellDef="let row">{{ row.lastReportAt | date: 'dd.MM HH:mm' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let row">
+          @if (row.stopped) {
+            <span class="status stopped">No reports for {{ row.minutesAgo }} min</span>
+          } @else {
+            <span class="status ok">Reporting</span>
+          }
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="statusColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: statusColumns"></tr>
+      <tr class="empty-row" *matNoDataRow>
+        <td [attr.colspan]="statusColumns.length">No reports in the last 7 days</td>
+      </tr>
+    </table>
+  }
+</app-range-panel>
 
-  <section class="panel">
-    <h2>Summary</h2>
-    <div class="panel-body">
-      <table mat-table [dataSource]="rows" matSort matSortActive="scraper" matSortDirection="asc">
-        <ng-container matColumnDef="scraper">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Scraper</th>
-          <td mat-cell *matCellDef="let row">{{ row.scraper }}</td>
-        </ng-container>
-        <ng-container matColumnDef="itemsPerSecond">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Items/s</th>
-          <td mat-cell *matCellDef="let row">
-            {{ formatNumber(row.itemsPerSecond) }} ({{ formatSigned(row.itemsPerSecondDiff) }})
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="requests">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Requests</th>
-          <td mat-cell *matCellDef="let row">{{ formatNumber(row.requests, 0) }}</td>
-        </ng-container>
-        <ng-container matColumnDef="wastedPercent">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Wasted %</th>
-          <td mat-cell *matCellDef="let row">{{ formatNumber(row.wastedPercent) }}</td>
-        </ng-container>
-        <ng-container matColumnDef="captchaPercent">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Captcha %</th>
-          <td mat-cell *matCellDef="let row">{{ formatNumber(row.captchaPercent) }}</td>
-        </ng-container>
-        <ng-container matColumnDef="kbPerItem">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>KB/item</th>
-          <td mat-cell *matCellDef="let row">{{ formatNumber(row.kbPerItem) }}</td>
-        </ng-container>
-        <ng-container matColumnDef="reusePercent">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Reuse %</th>
-          <td mat-cell *matCellDef="let row">{{ formatNumber(row.reusePercent) }}</td>
-        </ng-container>
-        <ng-container matColumnDef="attemptsPerItem">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Attempts/item</th>
-          <td mat-cell *matCellDef="let row">{{ formatNumber(row.attemptsPerItem) }}</td>
-        </ng-container>
-        <ng-container matColumnDef="bytesIn">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>In MB</th>
-          <td mat-cell *matCellDef="let row">{{ formatMegabytes(row.bytesIn) }}</td>
-        </ng-container>
-        <ng-container matColumnDef="bytesOut">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Out MB</th>
-          <td mat-cell *matCellDef="let row">{{ formatMegabytes(row.bytesOut) }}</td>
-        </ng-container>
-        <ng-container matColumnDef="connections">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Connections</th>
-          <td mat-cell *matCellDef="let row">{{ formatNumber(row.connections, 0) }}</td>
-        </ng-container>
-        <tr mat-header-row *matHeaderRowDef="columns"></tr>
-        <tr mat-row *matRowDef="let row; columns: columns"></tr>
-        <tr class="empty-row" *matNoDataRow>
-          <td [attr.colspan]="columns.length">No data</td>
-        </tr>
-      </table>
-    </div>
-  </section>
+<app-range-panel heading="Summary" [source]="summaryTable">
+  @if (summaryTable.data()) {
+    <table mat-table [dataSource]="rows" matSort matSortActive="scraper" matSortDirection="asc">
+      <ng-container matColumnDef="scraper">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Scraper</th>
+        <td mat-cell *matCellDef="let row">{{ row.scraper }}</td>
+      </ng-container>
+      <ng-container matColumnDef="itemsPerSecond">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Items/s</th>
+        <td mat-cell *matCellDef="let row">
+          {{ formatNumber(row.itemsPerSecond) }} ({{ formatSigned(row.itemsPerSecondDiff) }})
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="requests">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Requests</th>
+        <td mat-cell *matCellDef="let row">{{ formatNumber(row.requests, 0) }}</td>
+      </ng-container>
+      <ng-container matColumnDef="wastedPercent">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Wasted %</th>
+        <td mat-cell *matCellDef="let row">{{ formatNumber(row.wastedPercent) }}</td>
+      </ng-container>
+      <ng-container matColumnDef="captchaPercent">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Captcha %</th>
+        <td mat-cell *matCellDef="let row">{{ formatNumber(row.captchaPercent) }}</td>
+      </ng-container>
+      <ng-container matColumnDef="kbPerItem">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>KB/item</th>
+        <td mat-cell *matCellDef="let row">{{ formatNumber(row.kbPerItem) }}</td>
+      </ng-container>
+      <ng-container matColumnDef="reusePercent">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Reuse %</th>
+        <td mat-cell *matCellDef="let row">{{ formatNumber(row.reusePercent) }}</td>
+      </ng-container>
+      <ng-container matColumnDef="attemptsPerItem">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Attempts/item</th>
+        <td mat-cell *matCellDef="let row">{{ formatNumber(row.attemptsPerItem) }}</td>
+      </ng-container>
+      <ng-container matColumnDef="bytesIn">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>In MB</th>
+        <td mat-cell *matCellDef="let row">{{ formatMegabytes(row.bytesIn) }}</td>
+      </ng-container>
+      <ng-container matColumnDef="bytesOut">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Out MB</th>
+        <td mat-cell *matCellDef="let row">{{ formatMegabytes(row.bytesOut) }}</td>
+      </ng-container>
+      <ng-container matColumnDef="connections">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Connections</th>
+        <td mat-cell *matCellDef="let row">{{ formatNumber(row.connections, 0) }}</td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns"></tr>
+      <tr class="empty-row" *matNoDataRow>
+        <td [attr.colspan]="columns.length">No data</td>
+      </tr>
+    </table>
+  }
+</app-range-panel>
 
-  <section class="panel">
-    <h2>Flow</h2>
-    <div class="panel-body">
-      <app-breakdown-table [rows]="store.flows()" groupLabel="Flow" [columns]="flowColumns" />
-    </div>
-  </section>
+<app-range-panel heading="Flow" [source]="flows">
+  @if (flows.data(); as rows) {
+    <app-breakdown-table [rows]="rows" groupLabel="Flow" [columns]="flowColumns" />
+  }
+</app-range-panel>
 
-  <section class="panel">
-    <h2>Countries</h2>
-    <div class="panel-body">
-      <app-breakdown-table
-        [rows]="store.countries()"
-        groupLabel="Country"
-        [columns]="countryColumns"
-      />
-    </div>
-  </section>
+<app-range-panel heading="Countries" [source]="countries">
+  @if (countries.data(); as rows) {
+    <app-breakdown-table [rows]="rows" groupLabel="Country" [columns]="countryColumns" />
+  }
+</app-range-panel>
 
-  <section class="panel">
-    <h2>Items/s</h2>
-    <div class="panel-body">
-      <app-time-series-chart [series]="store.itemsSeries()" [unit]="store.unit()" />
-    </div>
-  </section>
+<app-range-panel heading="Items/s" [source]="items">
+  @if (items.data(); as chart) {
+    <app-time-series-chart [series]="chart.series" [unit]="chart.unit" />
+  }
+</app-range-panel>
 
-  <section class="panel">
-    <h2>Wasted %</h2>
-    <div class="panel-body">
-      <app-time-series-chart [series]="store.wastedSeries()" [unit]="store.unit()" />
-    </div>
-  </section>
+<app-range-panel heading="Wasted %" [source]="wasted">
+  @if (wasted.data(); as chart) {
+    <app-time-series-chart [series]="chart.series" [unit]="chart.unit" />
+  }
+</app-range-panel>
 
-  <section class="panel">
-    <h2>Captcha %</h2>
-    <div class="panel-body">
-      <app-time-series-chart [series]="store.captchaSeries()" [unit]="store.unit()" />
-    </div>
-  </section>
-} @else if (store.error(); as error) {
-  <p class="error" role="alert">Failed to load the data: {{ error }}</p>
-} @else {
-  <p class="loading">Loading…</p>
-}
+<app-range-panel heading="Captcha %" [source]="captcha">
+  @if (captcha.data(); as chart) {
+    <app-time-series-chart [series]="chart.series" [unit]="chart.unit" />
+  }
+</app-range-panel>
