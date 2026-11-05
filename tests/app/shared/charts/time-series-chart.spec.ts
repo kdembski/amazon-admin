@@ -58,4 +58,14 @@ describe('TimeSeriesChart', () => {
 
     expect(chart.options().scales.x).toMatchObject({ stacked: false, time: { unit: 'hour' } });
   });
+
+  it('labels the points only when asked', async () => {
+    const series = [{ label: 'A', points: [{ t, value: 1 }] }];
+    const { chart } = await render(series);
+    const labeled = await render(series, { pointLabels: true });
+
+    expect(chart.data().datasets[0].pointRadius).toBe(0);
+    expect(labeled.chart.data().datasets[0].pointRadius).toBe(3);
+    expect(labeled.chart.options().layout.padding.top).toBe(20);
+  });
 });

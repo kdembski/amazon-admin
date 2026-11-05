@@ -1,7 +1,9 @@
 import 'chartjs-adapter-date-fns';
 import { Component, computed, input } from '@angular/core';
 import { pl } from 'date-fns/locale';
+import { Plugin } from 'chart.js';
 import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
+import { formatCompact } from '@app/shared/format/format-number';
 import { ChartSeries } from '@app/types/chart';
 import { Granularity } from '@app/types/time-range';
 
@@ -29,6 +31,32 @@ const cssVar = (name: string, fallback: string) => {
   return color;
 };
 
+// Draws every point's value above it, e.g. "123k".
+const pointLabels: Plugin = {
+  id: 'pointLabels',
+  afterDatasetsDraw: (chart) => {
+    const ctx = chart.ctx;
+
+    ctx.save();
+    ctx.fillStyle = chart.options.scales?.['x']?.ticks?.color as string;
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    chart.data.datasets.forEach((dataset, index) => {
+      if (!chart.isDatasetVisible(index)) {
+        return;
+      }
+
+      chart.getDatasetMeta(index).data.forEach((element, i) => {
+        const point = dataset.data[i] as { y: number };
+
+        ctx.fillText(formatCompact(point.y), element.x, element.y - 6);
+      });
+    });
+    ctx.restore();
+  },
+};
+
 @Component({
   selector: 'app-time-series-chart',
   imports: [BaseChartDirective],
@@ -37,7 +65,13 @@ const cssVar = (name: string, fallback: string) => {
   template: `
     @if (hasData()) {
       <div class="canvas">
-        <canvas baseChart [type]="type()" [data]="data()" [options]="options()"></canvas>
+        <canvas
+          baseChart
+          [type]="type()"
+          [data]="data()"
+          [options]="options()"
+          [plugins]="plugins()"
+        ></canvas>
       </div>
     } @else {
       <p class="empty">No data</p>
@@ -51,6 +85,9 @@ export class TimeSeriesChart {
   readonly stacked = input(false);
   readonly fill = input(false);
   readonly unit = input<Granularity>('hour');
+  readonly pointLabels = input(false);
+
+  protected readonly plugins = computed(() => (this.pointLabels() ? [pointLabels] : []));
 
   protected readonly hasData = computed(() => {
     return this.series().some((series) => series.points.some((point) => point.value !== 0));
@@ -66,7 +103,7 @@ export class TimeSeriesChart {
         borderColor: color,
         backgroundColor: this.fill() ? `${color}33` : color,
         fill: this.fill(),
-        pointRadius: 0,
+        pointRadius: this.pointLabels() ? 3 : 0,
         tension: 0.2,
       };
     }),
@@ -79,6 +116,8 @@ export class TimeSeriesChart {
     return {
       maintainAspectRatio: false,
       animation: false as const,
+      // Room for the point labels above the highest point.
+      layout: { padding: { top: this.pointLabels() ? 20 : 0 } },
       interaction: { mode: 'index' as const, intersect: false },
       plugins: { legend: { display: this.series().length > 1, labels: { color: text } } },
       scales: {

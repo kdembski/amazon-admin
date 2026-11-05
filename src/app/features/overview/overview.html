@@ -12,7 +12,12 @@
 
 <app-range-panel heading="Scraped ads" [source]="scraped" [chart]="true">
   @if (scraped.data(); as chart) {
-    <app-time-series-chart [series]="chart.series" [fill]="true" [unit]="chart.unit" />
+    <app-time-series-chart
+      [series]="chart.series"
+      [fill]="true"
+      [unit]="chart.unit"
+      [pointLabels]="true"
+    />
   }
 </app-range-panel>
 

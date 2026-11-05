@@ -25,3 +25,17 @@ export const formatSigned = (value: number, digits = 2) => {
 export const formatMegabytes = (bytes: number) => {
   return formatNumber(bytes / 1_048_576, 1);
 };
+
+const compactFormatter = (digits: number) => {
+  return new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: digits });
+};
+
+const compactThousands = compactFormatter(0);
+const compactMillions = compactFormatter(1);
+
+// Millions keep one decimal (1.2m), smaller values none (123k).
+export const formatCompact = (value: number) => {
+  const formatter = Math.abs(value) >= 1_000_000 ? compactMillions : compactThousands;
+
+  return formatter.format(value).toLowerCase();
+};
