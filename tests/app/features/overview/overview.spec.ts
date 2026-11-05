@@ -5,7 +5,7 @@ import { provideRouter } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
 import { StatsApiService } from '@app/core/api/stats-api-service';
 import { Overview } from '@app/features/overview/overview';
-import { ActivityStatsDto, LogStatsDto } from '@app/types/api-dtos';
+import { ActivityStatsDto } from '@app/types/api-dtos';
 
 @Component({ template: '' })
 class Blank {}
@@ -29,21 +29,11 @@ const activity: ActivityStatsDto = {
   countryOutlierChannels: [],
 };
 
-const logs: LogStatsDto = {
-  series: [
-    { level: 'error', points: [] },
-    { level: 'warn', points: [] },
-  ],
-  totals: { error: 4, warn: 5 },
-  previousTotals: { error: 0, warn: 0 },
-  topSources: [{ source: 'AmazonAdService', error: 4, warn: 1 }],
-};
-
 const render = async (getActivity: () => Observable<ActivityStatsDto>) => {
   TestBed.configureTestingModule({
     providers: [
       provideRouter([{ path: '**', component: Blank }]),
-      { provide: StatsApiService, useValue: { getActivity, getLogs: () => of(logs) } },
+      { provide: StatsApiService, useValue: { getActivity } },
     ],
   });
   const fixture = TestBed.createComponent(Overview);
@@ -52,7 +42,7 @@ const render = async (getActivity: () => Observable<ActivityStatsDto>) => {
 };
 
 describe('Overview', () => {
-  it('shows the last hour and last 24 h summaries, empty charts and the top log sources', async () => {
+  it('shows the last hour and last 24 h summaries, and empty charts', async () => {
     const element = await render(() => of(activity));
 
     const summary = element.querySelector('.summary')!;
@@ -69,8 +59,7 @@ describe('Overview', () => {
     expect(tiles[0]).toContain('1234');
     expect(tiles[0]).toContain('+23%');
     expect(element.textContent).toContain('No data');
-    expect(element.querySelector('table')?.textContent).toContain('AmazonAdService');
-    expect(element.querySelectorAll('app-range-panel mat-button-toggle-group')).toHaveLength(5);
+    expect(element.querySelectorAll('app-range-panel mat-button-toggle-group')).toHaveLength(3);
   });
 
   it('shows the error of a first load that failed', async () => {

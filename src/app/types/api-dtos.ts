@@ -2,7 +2,6 @@
 
 export type ActivityEventType =
   'ad_scraped' | 'country_outlier_sent' | 'price_drop_sent' | 'ad_created' | 'ad_deleted';
-export type LogLevel = 'error' | 'warn';
 
 export interface TimePoint {
   t: string;
@@ -23,18 +22,6 @@ export interface ActivityStatsDto {
   comparable?: { minPrices: number; total: number; previousTotal: number };
   // channels of the countryOutlier.ruleGroups setting; id matches the channel of a series
   countryOutlierChannels: { id: string; name: string }[];
-}
-
-export interface LogLevelCounts {
-  error: number;
-  warn: number;
-}
-
-export interface LogStatsDto {
-  series: { level: LogLevel; points: TimePoint[] }[];
-  totals: LogLevelCounts;
-  previousTotals: LogLevelCounts;
-  topSources: ({ source: string } & LogLevelCounts)[];
 }
 
 export type ScraperBreakdownKey = 'country' | 'flow';
