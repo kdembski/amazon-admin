@@ -16,10 +16,10 @@ describe('TimeSeriesChart', () => {
   it.each([
     ['no series', []],
     ['only zeros', [{ label: 'A', points: [{ t, value: 0 }] }]],
-  ])('shows "Brak danych" for %s', async (_, series) => {
+  ])('shows "No data" for %s', async (_, series) => {
     const { element } = await render(series);
 
-    expect(element.textContent).toContain('Brak danych');
+    expect(element.textContent).toContain('No data');
     expect(element.querySelector('canvas')).toBeNull();
   });
 
@@ -43,6 +43,14 @@ describe('TimeSeriesChart', () => {
     const scales = chart.options().scales;
     expect(scales.x).toMatchObject({ type: 'time', stacked: true, time: { unit: 'day' } });
     expect(scales.y).toMatchObject({ stacked: true, beginAtZero: true });
+    expect(chart.options().plugins.legend.display).toBe(true);
+    expect(chart.options().animation).toBe(false);
+  });
+
+  it('hides the legend for a single series', async () => {
+    const { chart } = await render([{ label: 'A', points: [{ t, value: 1 }] }]);
+
+    expect(chart.options().plugins.legend.display).toBe(false);
   });
 
   it('is not stacked by default', async () => {

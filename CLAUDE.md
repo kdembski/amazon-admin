@@ -70,7 +70,7 @@ npm start                        # ng serve; /api proxied to API_URL with API_TO
 npx ng test --watch=false        # Vitest
 npx ng lint
 npx prettier --write src tests  # format before committing
-docker compose up -d --build     # production: nginx on 127.0.0.1:8080, env from .env (see README)
+docker compose up -d --build     # production: nginx on 127.0.0.1:8081, env from .env (see README)
 npx ng build
 ```
 
@@ -93,14 +93,16 @@ npx ng build
   blank line.
 - Write standalone functions as `const` arrow functions (`export const poll = <T>(...) => { ... }`), never with the
   `function` keyword; class members stay methods.
-- UI text in Polish; code, identifiers and error messages in English.
+- UI text, code, identifiers and error messages in English.
 - Never put the API token in the bundle, `environment` files or browser storage.
 - State: NgRx SignalStore (`@ngrx/signals`). Shared state in `providedIn: 'root'` stores, view state in a store provided
   by the view component; components only read store signals and call store methods. Periodic loading goes through
   `withPolling(() => (range) => load)` from `shared/polling`.
 - HTTP clients: one stateless `<Name>ApiService` per server area in `core/api/` (`stats-api-service.ts`), one method per endpoint.
 - Copy API DTOs from amazon-server into `types/api-dtos.ts` with the same field names.
-- Query `from`/`to` as `Date.toISOString()`; ranges at most 30 days.
+- Query `from`/`to` as `Date.toISOString()`; ranges at most 30 days (the server limit and its log retention).
+- Every range-dependent panel has its own `RangePanel` with presets 1d, 7d, 30d (default 1d), backed by its own store;
+  no global range.
 - Poll every 60 s, paused while the tab is hidden.
 - Charts: hours for ranges up to 48 h, days in the browser time zone above.
 - Every new component, service, store and helper gets a `.spec.ts` under `tests/` at the path mirroring `src/`.

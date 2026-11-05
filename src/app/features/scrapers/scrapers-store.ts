@@ -1,44 +1,58 @@
-import { computed, inject } from '@angular/core';
-import { signalStore, withComputed } from '@ngrx/signals';
-import { forkJoin, map } from 'rxjs';
+import { inject } from '@angular/core';
+import { signalStore } from '@ngrx/signals';
+import { map } from 'rxjs';
 import { ScrapersApiService } from '@app/core/api/scrapers-api-service';
+import { chartStore } from '@app/shared/charts/chart-store';
 import { withPolling } from '@app/shared/polling/with-polling';
-import { granularity } from '@app/shared/time-range/time-range';
-import { ScraperChartField, ScrapersData } from '@app/types/scrapers';
+import { ScraperBreakdownKey } from '@app/types/api-dtos';
+import { ScraperChartField } from '@app/types/scrapers';
 import { TimeRange } from '@app/types/time-range';
-import { toScraperSeries } from './scraper-charts';
+import { toScraperSeries, toScraperStatuses } from './scraper-charts';
 
-export const ScrapersStore = signalStore(
+// Every panel has its own range, so each one loads on its own.
+const series = () => {
+  const api = inject(ScrapersApiService);
+
+  return (range: TimeRange) => api.getSeries(range);
+};
+
+const seriesChart = (field: ScraperChartField) => {
+  return chartStore(series, (dto, range, unit) => toScraperSeries(dto, range, unit, field));
+};
+
+const breakdown = (by: ScraperBreakdownKey) => {
+  return signalStore(
+    withPolling(() => {
+      const api = inject(ScrapersApiService);
+
+      return (range: TimeRange) => api.getBreakdown(range, by);
+    }),
+  );
+};
+
+export const ItemsStore = seriesChart('itemsPerSecond');
+
+export const WastedStore = seriesChart('wastedPercent');
+
+export const CaptchaStore = seriesChart('captchaPercent');
+
+export const FlowStore = breakdown('flow');
+
+export const CountryStore = breakdown('country');
+
+export const SummaryTableStore = signalStore(
   withPolling(() => {
     const api = inject(ScrapersApiService);
 
-    // The range travels with the data so the charts span exactly what was loaded.
-    return (range: TimeRange) => {
-      return forkJoin({ summaries: api.getSummaries(range), series: api.getSeries(range) }).pipe(
-        map((loaded): ScrapersData => ({ ...loaded, range })),
-      );
-    };
+    return (range: TimeRange) => api.getSummaries(range);
   }),
-  withComputed(({ data }) => {
-    const unit = computed(() => {
-      const loaded = data();
+);
 
-      return loaded ? granularity(loaded.range) : 'hour';
-    });
-    const chart = (field: ScraperChartField) => {
-      return computed(() => {
-        const loaded = data();
+// The statuses ignore the range; their age is measured when they arrive.
+export const StatusStore = signalStore(
+  withPolling(() => {
+    const api = inject(ScrapersApiService);
 
-        return loaded ? toScraperSeries(loaded.series, loaded.range, unit(), field) : [];
-      });
-    };
-
-    return {
-      unit,
-      rows: computed(() => data()?.summaries ?? []),
-      itemsSeries: chart('itemsPerSecond'),
-      wastedSeries: chart('wastedPercent'),
-      captchaSeries: chart('captchaPercent'),
-    };
+    return () => api.getStatuses().pipe(map((statuses) => toScraperStatuses(statuses, new Date())));
   }),
 );

@@ -17,8 +17,16 @@ const COLORS = [
   '#84cc16',
 ];
 
+// Material tokens are light-dark() pairs, which only a real color property resolves for the canvas.
 const cssVar = (name: string, fallback: string) => {
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+  const probe = document.createElement('span');
+
+  probe.style.color = `var(${name}, ${fallback})`;
+  document.body.append(probe);
+  const color = getComputedStyle(probe).color;
+  probe.remove();
+
+  return color;
 };
 
 @Component({
@@ -32,7 +40,7 @@ const cssVar = (name: string, fallback: string) => {
         <canvas baseChart [type]="type()" [data]="data()" [options]="options()"></canvas>
       </div>
     } @else {
-      <p class="empty">Brak danych</p>
+      <p class="empty">No data</p>
     }
   `,
   styleUrl: './time-series-chart.scss',
@@ -70,8 +78,9 @@ export class TimeSeriesChart {
 
     return {
       maintainAspectRatio: false,
+      animation: false as const,
       interaction: { mode: 'index' as const, intersect: false },
-      plugins: { legend: { labels: { color: text } } },
+      plugins: { legend: { display: this.series().length > 1, labels: { color: text } } },
       scales: {
         x: {
           type: 'time' as const,

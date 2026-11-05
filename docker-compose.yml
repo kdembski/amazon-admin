@@ -3,8 +3,8 @@ services:
     build: .
     restart: unless-stopped
     env_file: .env
-    # Only the host itself; Tailscale publishes it (tailscale serve --bg 8080).
+    # Only the host itself; Tailscale publishes it (tailscale serve --bg 8081).
     ports:
-      - "127.0.0.1:8080:80"
+      - "127.0.0.1:8081:80"
     extra_hosts:
       - "host.docker.internal:host-gateway"

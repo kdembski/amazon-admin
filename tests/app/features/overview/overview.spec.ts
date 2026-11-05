@@ -12,8 +12,21 @@ class Blank {}
 
 const activity: ActivityStatsDto = {
   series: [],
-  totals: { ad_scraped: 1234, country_outlier_sent: 2, price_drop_sent: 3 },
-  previousTotals: { ad_scraped: 1000, country_outlier_sent: 0, price_drop_sent: 0 },
+  totals: {
+    ad_scraped: 1234,
+    country_outlier_sent: 2,
+    price_drop_sent: 3,
+    ad_created: 0,
+    ad_deleted: 0,
+  },
+  previousTotals: {
+    ad_scraped: 1000,
+    country_outlier_sent: 0,
+    price_drop_sent: 0,
+    ad_created: 0,
+    ad_deleted: 0,
+  },
+  countryOutlierChannels: [],
 };
 
 const logs: LogStatsDto = {
@@ -39,17 +52,25 @@ const render = async (getActivity: () => Observable<ActivityStatsDto>) => {
 };
 
 describe('Overview', () => {
-  it('shows the five tiles, empty charts and the top log sources', async () => {
+  it('shows the last hour and last 24 h summaries, empty charts and the top log sources', async () => {
     const element = await render(() => of(activity));
 
-    const tiles = [...element.querySelectorAll('app-stat-tile')].map((tile) =>
+    const summary = element.querySelector('.summary')!;
+    const tiles = [...summary.querySelectorAll('.tile')].map((tile) =>
       tile.textContent?.replace(/\s+/g, ' ').trim(),
     );
-    expect(tiles).toHaveLength(5);
-    expect(tiles[0]).toContain('Zebrane ogłoszenia');
+    expect(summary.textContent).toContain('Last hour');
+    expect(summary.textContent).toContain('Last 24 h');
+    expect(summary.textContent).not.toContain('Errors');
+    expect(tiles).toHaveLength(8);
+    expect(tiles[1]).toContain('Ad balance');
+    expect(tiles[3]).toContain('Price drops');
+    expect(tiles[0]).toContain('Scraped ads');
     expect(tiles[0]).toContain('1234');
-    expect(element.textContent).toContain('Brak danych');
+    expect(tiles[0]).toContain('+23%');
+    expect(element.textContent).toContain('No data');
     expect(element.querySelector('table')?.textContent).toContain('AmazonAdService');
+    expect(element.querySelectorAll('app-range-panel mat-button-toggle-group')).toHaveLength(5);
   });
 
   it('shows the error of a first load that failed', async () => {
@@ -57,6 +78,7 @@ describe('Overview', () => {
     const element = await render(() => throwError(() => error));
 
     expect(element.querySelector('[role=alert]')?.textContent).toContain('503 Service Unavailable');
-    expect(element.querySelector('app-stat-tile')).toBeNull();
+    expect(element.querySelector('.tile')).toBeNull();
+    expect(element.querySelectorAll('app-range-panel [role=alert]')).toHaveLength(3);
   });
 });

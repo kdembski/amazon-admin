@@ -1,61 +1,64 @@
-<header class="heading">
-  <h1>Przegląd</h1>
-  @if (store.staleSince(); as staleSince) {
-    <span class="stale">Nieaktualne od {{ staleSince | date: 'HH:mm' }}</span>
+<h1>Overview</h1>
+
+<section class="summary" aria-label="Summary">
+  @if (summary.data(); as periods) {
+    <app-summary-panels [periods]="periods" />
+  } @else if (summary.error(); as error) {
+    <p class="error" role="alert">Failed to load the summary: {{ error }}</p>
+  } @else {
+    <p class="loading">Loading…</p>
   }
-</header>
+</section>
 
-@if (store.data()) {
-  <section class="tiles" aria-label="Podsumowanie">
-    @for (tile of store.tiles(); track tile.label) {
-      <app-stat-tile [label]="tile.label" [value]="tile.value" [previous]="tile.previous" />
-    }
-  </section>
+<app-range-panel heading="Scraped ads" [source]="scraped">
+  @if (scraped.data(); as chart) {
+    <app-time-series-chart [series]="chart.series" [fill]="true" [unit]="chart.unit" />
+  }
+</app-range-panel>
 
-  <section class="panel">
-    <h2>Zebrane ogłoszenia</h2>
-    <app-time-series-chart [series]="store.scrapedSeries()" [fill]="true" [unit]="store.unit()" />
-  </section>
+<app-range-panel heading="New and deleted ads" [source]="adChange">
+  @if (adChange.data(); as chart) {
+    <app-time-series-chart [series]="chart.series" type="bar" [unit]="chart.unit" />
+  }
+</app-range-panel>
 
-  <section class="panel">
-    <h2>Wysłane anomalie</h2>
+<app-range-panel heading="Sent anomalies" [source]="anomalies">
+  @if (anomalies.data(); as chart) {
     <app-time-series-chart
-      [series]="store.anomalySeries()"
+      [series]="chart.series"
       type="bar"
       [stacked]="true"
-      [unit]="store.unit()"
+      [unit]="chart.unit"
     />
-  </section>
+  }
+</app-range-panel>
 
-  <section class="panel">
-    <h2>Błędy i ostrzeżenia</h2>
-    <app-time-series-chart [series]="store.logSeries()" type="bar" [unit]="store.unit()" />
-  </section>
+<app-range-panel heading="Errors and warnings" [source]="logSeries">
+  @if (logSeries.data(); as chart) {
+    <app-time-series-chart [series]="chart.series" type="bar" [unit]="chart.unit" />
+  }
+</app-range-panel>
 
-  <section class="panel">
-    <h2>Najczęstsze źródła logów</h2>
-    <table mat-table [dataSource]="store.topSources()">
+<app-range-panel heading="Top log sources" [source]="topSources">
+  @if (topSources.data(); as rows) {
+    <table mat-table [dataSource]="rows">
       <ng-container matColumnDef="source">
-        <th mat-header-cell *matHeaderCellDef>Źródło</th>
+        <th mat-header-cell *matHeaderCellDef>Source</th>
         <td mat-cell *matCellDef="let row">{{ row.source }}</td>
       </ng-container>
       <ng-container matColumnDef="error">
-        <th mat-header-cell *matHeaderCellDef>Błędy</th>
+        <th mat-header-cell *matHeaderCellDef>Errors</th>
         <td mat-cell *matCellDef="let row">{{ row.error }}</td>
       </ng-container>
       <ng-container matColumnDef="warn">
-        <th mat-header-cell *matHeaderCellDef>Ostrzeżenia</th>
+        <th mat-header-cell *matHeaderCellDef>Warnings</th>
         <td mat-cell *matCellDef="let row">{{ row.warn }}</td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="sourceColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: sourceColumns"></tr>
       <tr class="empty-row" *matNoDataRow>
-        <td [attr.colspan]="sourceColumns.length">Brak danych</td>
+        <td [attr.colspan]="sourceColumns.length">No data</td>
       </tr>
     </table>
-  </section>
-} @else if (store.error(); as error) {
-  <p class="error" role="alert">Nie udało się pobrać danych: {{ error }}</p>
-} @else {
-  <p class="loading">Ładowanie…</p>
-}
+  }
+</app-range-panel>

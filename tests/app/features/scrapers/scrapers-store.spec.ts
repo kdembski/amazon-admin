@@ -1,13 +1,16 @@
-import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { ScrapersApiService } from '@app/core/api/scrapers-api-service';
-import { ScrapersStore } from '@app/features/scrapers/scrapers-store';
-import { ScraperMetricSummary, ScraperSeries } from '@app/types/api-dtos';
-
-@Component({ template: '' })
-class Blank {}
+import {
+  CaptchaStore,
+  CountryStore,
+  FlowStore,
+  ItemsStore,
+  StatusStore,
+  SummaryTableStore,
+  WastedStore,
+} from '@app/features/scrapers/scrapers-store';
+import { ScraperBreakdown, ScraperMetricSummary, ScraperSeries } from '@app/types/api-dtos';
 
 const start = new Date('2026-10-26T10:00:00.000Z');
 
@@ -21,7 +24,13 @@ const summary: ScraperMetricSummary = {
   kbPerItem: 9,
   reusePercent: 80,
   attemptsPerItem: 1.2,
+  bytesIn: 2048,
+  bytesOut: 1024,
+  connections: 20,
+  previousRequests: 50,
 };
+
+const country: ScraperBreakdown = { ...summary, group: 'de' };
 
 const series: ScraperSeries[] = [
   {
@@ -39,21 +48,43 @@ const series: ScraperSeries[] = [
 ];
 
 const setup = () => {
-  const api = { getSummaries: vi.fn(() => of([summary])), getSeries: vi.fn(() => of(series)) };
+  const api = {
+    getSummaries: vi.fn(() => of([summary])),
+    getSeries: vi.fn(() => of(series)),
+    getBreakdown: vi.fn((_range: unknown, by: string) =>
+      of(by === 'country' ? [country] : [{ ...summary, group: 'pdp' }]),
+    ),
+    getStatuses: vi.fn(() =>
+      of([{ scraper: 'amazon-pdp-1', lastReportAt: '2026-10-26T09:50:00.000Z' }]),
+    ),
+  };
+  const stores = [
+    StatusStore,
+    SummaryTableStore,
+    FlowStore,
+    CountryStore,
+    ItemsStore,
+    WastedStore,
+    CaptchaStore,
+  ];
   TestBed.configureTestingModule({
-    providers: [
-      provideRouter([{ path: '**', component: Blank }]),
-      { provide: ScrapersApiService, useValue: api },
-      ScrapersStore,
-    ],
+    providers: [{ provide: ScrapersApiService, useValue: api }, ...stores],
   });
-  const store = TestBed.inject(ScrapersStore);
+  const injected = {
+    statuses: TestBed.inject(StatusStore),
+    summaryTable: TestBed.inject(SummaryTableStore),
+    flows: TestBed.inject(FlowStore),
+    countries: TestBed.inject(CountryStore),
+    items: TestBed.inject(ItemsStore),
+    wasted: TestBed.inject(WastedStore),
+    captcha: TestBed.inject(CaptchaStore),
+  };
   TestBed.tick();
 
-  return { api, store };
+  return { api, ...injected };
 };
 
-describe('ScrapersStore', () => {
+describe('scraper stores', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(start);
@@ -61,22 +92,38 @@ describe('ScrapersStore', () => {
 
   afterEach(() => vi.useRealTimers());
 
-  it('loads summaries and series for the same range', () => {
-    const { api } = setup();
+  it('load the summaries and the breakdowns of the last day', () => {
+    const { api, summaryTable, flows, countries } = setup();
     const range = { from: new Date(start.getTime() - 86_400_000), to: start };
 
     expect(api.getSummaries).toHaveBeenCalledWith(range);
-    expect(api.getSeries).toHaveBeenCalledWith(range);
+    expect(api.getBreakdown).toHaveBeenCalledWith(range, 'country');
+    expect(api.getBreakdown).toHaveBeenCalledWith(range, 'flow');
+    expect(summaryTable.data()).toEqual([summary]);
+    expect(countries.data()).toEqual([country]);
+    expect(flows.data()?.[0].group).toBe('pdp');
   });
 
-  it('derives the table rows and the three charts', () => {
-    const { store } = setup();
+  it('measure the statuses when they arrive', () => {
+    const { statuses } = setup();
 
-    expect(store.rows()).toEqual([summary]);
-    expect(store.unit()).toBe('hour');
-    expect(store.itemsSeries()[0].label).toBe('amazon-pdp-1');
-    expect(store.itemsSeries()[0].points).toHaveLength(24);
-    expect(store.wastedSeries()[0].points.some((p) => p.value === 10)).toBe(true);
-    expect(store.captchaSeries()[0].points.some((p) => p.value === 1)).toBe(true);
+    expect(statuses.data()).toEqual([
+      {
+        scraper: 'amazon-pdp-1',
+        lastReportAt: new Date('2026-10-26T09:50:00.000Z'),
+        minutesAgo: 10,
+        stopped: true,
+      },
+    ]);
+  });
+
+  it('derive one chart per metric', () => {
+    const { items, wasted, captcha } = setup();
+
+    expect(items.data()?.unit).toBe('hour');
+    expect(items.data()?.series[0].label).toBe('amazon-pdp-1');
+    expect(items.data()?.series[0].points).toHaveLength(24);
+    expect(wasted.data()?.series[0].points.some((p) => p.value === 10)).toBe(true);
+    expect(captcha.data()?.series[0].points.some((p) => p.value === 1)).toBe(true);
   });
 });
