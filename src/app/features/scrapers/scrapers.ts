@@ -6,6 +6,7 @@ import { TimeSeriesChart } from '@app/shared/charts/time-series-chart';
 import { RangePanel } from '@app/shared/range-panel/range-panel';
 import { formatMegabytes, formatNumber, formatSigned } from '@app/shared/format/format-number';
 import { SummaryPanels } from '@app/shared/summary/summary-panels';
+import { SummarySkeleton } from '@app/shared/summary/summary-skeleton';
 import { ScraperMetricSummary } from '@app/types/api-dtos';
 import { BreakdownColumn } from '@app/types/scrapers';
 import { BreakdownTable } from './breakdown-table';
@@ -29,6 +30,7 @@ import {
     MatTableModule,
     RangePanel,
     SummaryPanels,
+    SummarySkeleton,
     TimeSeriesChart,
   ],
   providers: [

@@ -3,6 +3,7 @@ import { MatTableModule } from '@angular/material/table';
 import { TimeSeriesChart } from '@app/shared/charts/time-series-chart';
 import { RangePanel } from '@app/shared/range-panel/range-panel';
 import { SummaryPanels } from '@app/shared/summary/summary-panels';
+import { SummarySkeleton } from '@app/shared/summary/summary-skeleton';
 import {
   AdChangeStore,
   AnomalyStore,
@@ -14,7 +15,7 @@ import { SummaryStore } from './summary-store';
 
 @Component({
   selector: 'app-overview',
-  imports: [MatTableModule, RangePanel, SummaryPanels, TimeSeriesChart],
+  imports: [MatTableModule, RangePanel, SummaryPanels, SummarySkeleton, TimeSeriesChart],
   providers: [
     ScrapedStore,
     AdChangeStore,

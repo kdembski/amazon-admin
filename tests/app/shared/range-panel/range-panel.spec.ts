@@ -59,6 +59,17 @@ describe('RangePanel', () => {
     expect(stale.element.querySelector('.stale')?.textContent).toContain('09:05');
   });
 
+  it('keeps the chart height only in chart panels', async () => {
+    const plain = await render(source());
+    const chart = await render(source());
+    chart.fixture.componentRef.setInput('chart', true);
+    await chart.fixture.whenStable();
+
+    expect(plain.element.querySelector('.body')?.classList).not.toContain('chart');
+    expect(chart.element.querySelector('.body')?.classList).toContain('chart');
+    expect(chart.element.querySelector('.loading')?.getAttribute('aria-label')).toBe('Loading');
+  });
+
   it('hides the presets of data without a range', async () => {
     const { element } = await render(source(), false);
 

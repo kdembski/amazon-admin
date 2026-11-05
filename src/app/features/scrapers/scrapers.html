@@ -1,12 +1,12 @@
 <h1>Scrapers</h1>
 
-<section aria-label="Request summary">
+<section class="summary" aria-label="Request summary">
   @if (summary.data(); as periods) {
     <app-summary-panels [periods]="periods" />
   } @else if (summary.error(); as error) {
     <p class="error" role="alert">Failed to load the summary: {{ error }}</p>
   } @else {
-    <p class="loading">Loading…</p>
+    <app-summary-skeleton />
   }
 </section>
 
@@ -110,19 +110,19 @@
   }
 </app-range-panel>
 
-<app-range-panel heading="Items/s" [source]="items">
+<app-range-panel heading="Items/s" [source]="items" [chart]="true">
   @if (items.data(); as chart) {
     <app-time-series-chart [series]="chart.series" [unit]="chart.unit" />
   }
 </app-range-panel>
 
-<app-range-panel heading="Wasted %" [source]="wasted">
+<app-range-panel heading="Wasted %" [source]="wasted" [chart]="true">
   @if (wasted.data(); as chart) {
     <app-time-series-chart [series]="chart.series" [unit]="chart.unit" />
   }
 </app-range-panel>
 
-<app-range-panel heading="Captcha %" [source]="captcha">
+<app-range-panel heading="Captcha %" [source]="captcha" [chart]="true">
   @if (captcha.data(); as chart) {
     <app-time-series-chart [series]="chart.series" [unit]="chart.unit" />
   }

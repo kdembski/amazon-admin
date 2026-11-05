@@ -8,8 +8,13 @@ h1 {
   font-size: 1.5rem;
 }
 
-.loading {
-  color: var(--mat-sys-on-surface-variant);
+// The height of the loaded tiles on a wide screen, so the page does not jump.
+.summary {
+  --summary-height: 325px;
+
+  display: grid;
+  align-content: center;
+  min-height: var(--summary-height);
 }
 
 .error {

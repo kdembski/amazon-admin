@@ -6,23 +6,23 @@
   } @else if (summary.error(); as error) {
     <p class="error" role="alert">Failed to load the summary: {{ error }}</p>
   } @else {
-    <p class="loading">Loading…</p>
+    <app-summary-skeleton />
   }
 </section>
 
-<app-range-panel heading="Scraped ads" [source]="scraped">
+<app-range-panel heading="Scraped ads" [source]="scraped" [chart]="true">
   @if (scraped.data(); as chart) {
     <app-time-series-chart [series]="chart.series" [fill]="true" [unit]="chart.unit" />
   }
 </app-range-panel>
 
-<app-range-panel heading="New and deleted ads" [source]="adChange">
+<app-range-panel heading="New and deleted ads" [source]="adChange" [chart]="true">
   @if (adChange.data(); as chart) {
     <app-time-series-chart [series]="chart.series" type="bar" [unit]="chart.unit" />
   }
 </app-range-panel>
 
-<app-range-panel heading="Sent anomalies" [source]="anomalies">
+<app-range-panel heading="Sent anomalies" [source]="anomalies" [chart]="true">
   @if (anomalies.data(); as chart) {
     <app-time-series-chart
       [series]="chart.series"
@@ -33,7 +33,7 @@
   }
 </app-range-panel>
 
-<app-range-panel heading="Errors and warnings" [source]="logSeries">
+<app-range-panel heading="Errors and warnings" [source]="logSeries" [chart]="true">
   @if (logSeries.data(); as chart) {
     <app-time-series-chart [series]="chart.series" type="bar" [unit]="chart.unit" />
   }

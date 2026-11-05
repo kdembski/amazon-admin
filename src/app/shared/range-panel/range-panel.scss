@@ -34,9 +34,15 @@
   font-size: 12px;
 }
 
+.chart {
+  display: grid;
+  align-content: center;
+  // The height of TimeSeriesChart.
+  min-height: 288px;
+}
+
 .loading {
-  margin: 0;
-  color: var(--mat-sys-on-surface-variant);
+  margin: 0 auto;
 }
 
 .error {

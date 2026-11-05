@@ -18,13 +18,18 @@
       </mat-button-toggle-group>
     }
   </header>
-  <div class="body">
+  <div class="body" [class.chart]="chart()">
     <ng-content />
     @if (source().data() === null) {
       @if (source().error(); as error) {
         <p class="error" role="alert">Failed to load the data: {{ error }}</p>
       } @else {
-        <p class="loading">Loading…</p>
+        <mat-progress-spinner
+          class="loading"
+          mode="indeterminate"
+          diameter="32"
+          aria-label="Loading"
+        />
       }
     }
   </div>
