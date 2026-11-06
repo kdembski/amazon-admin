@@ -1,4 +1,4 @@
-import { formatMegabytes, formatNumber, formatSigned } from '@app/shared/format/format-number';
+import { formatCompact, formatNumber } from '@app/shared/format/format-number';
 
 describe('formatNumber', () => {
   it('shows two decimals in Polish format', () => {
@@ -11,17 +11,10 @@ describe('formatNumber', () => {
   });
 });
 
-describe('formatSigned', () => {
-  it('prefixes growth with + and keeps the minus of a drop', () => {
-    expect(formatSigned(0.12)).toBe('+0,12');
-    expect(formatSigned(-0.3)).toBe('-0,30');
-    expect(formatSigned(0)).toBe('0,00');
-  });
-});
-
-describe('formatMegabytes', () => {
-  it('shows bytes as megabytes with one decimal', () => {
-    expect(formatMegabytes(1_572_864)).toBe('1,5');
-    expect(formatMegabytes(0)).toBe('0,0');
+describe('formatCompact', () => {
+  it('shortens thousands and millions with a lowercase suffix', () => {
+    expect(formatCompact(123_456)).toBe('123k');
+    expect(formatCompact(1_234_567)).toBe('1.2m');
+    expect(formatCompact(42)).toBe('42');
   });
 });

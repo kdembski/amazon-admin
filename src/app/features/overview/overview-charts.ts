@@ -1,11 +1,9 @@
 import { toChartPoints } from '@app/shared/charts/to-chart-points';
-import { ActivityEventType, ActivityStatsDto, LogStatsDto } from '@app/types/api-dtos';
+import { ActivityEventType, ActivityStatsDto } from '@app/types/api-dtos';
 import { stat } from '@app/shared/summary/summary';
 import { ChartSeries } from '@app/types/chart';
 import { SummaryStat, SummaryTile } from '@app/types/summary';
 import { Granularity, TimeRange } from '@app/types/time-range';
-
-const LOG_LABELS = { error: 'Errors', warn: 'Warnings' };
 
 export const toScrapedSeries = (
   dto: ActivityStatsDto,
@@ -60,17 +58,6 @@ export const toAdChangeSeries = (
     { label: 'New ads', points: toChartPoints(points('ad_created'), range, unit) },
     { label: 'Deleted ads', points: toChartPoints(points('ad_deleted'), range, unit) },
   ];
-};
-
-export const toLogSeries = (
-  dto: LogStatsDto,
-  range: TimeRange,
-  unit: Granularity,
-): ChartSeries[] => {
-  return dto.series.map((series) => ({
-    label: LOG_LABELS[series.level],
-    points: toChartPoints(series.points, range, unit),
-  }));
 };
 
 export const toSummaryTiles = (dto: ActivityStatsDto): SummaryTile[] => {

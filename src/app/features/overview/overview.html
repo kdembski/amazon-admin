@@ -1,28 +1,38 @@
 <h1>Overview</h1>
 
-<section class="summary" aria-label="Summary">
+<section
+  class="summary"
+  aria-label="Summary"
+  appRememberedHeight="overview-summary-height"
+  [loaded]="summary.data() !== null"
+>
   @if (summary.data(); as periods) {
     <app-summary-panels [periods]="periods" />
   } @else if (summary.error(); as error) {
     <p class="error" role="alert">Failed to load the summary: {{ error }}</p>
   } @else {
-    <p class="loading">Loading…</p>
+    <app-summary-skeleton />
   }
 </section>
 
-<app-range-panel heading="Scraped ads" [source]="scraped">
+<app-range-panel heading="Scraped ads" [source]="scraped" [chart]="true">
   @if (scraped.data(); as chart) {
-    <app-time-series-chart [series]="chart.series" [fill]="true" [unit]="chart.unit" />
+    <app-time-series-chart
+      [series]="chart.series"
+      [fill]="true"
+      [unit]="chart.unit"
+      [pointLabels]="true"
+    />
   }
 </app-range-panel>
 
-<app-range-panel heading="New and deleted ads" [source]="adChange">
+<app-range-panel heading="New and deleted ads" [source]="adChange" [chart]="true">
   @if (adChange.data(); as chart) {
     <app-time-series-chart [series]="chart.series" type="bar" [unit]="chart.unit" />
   }
 </app-range-panel>
 
-<app-range-panel heading="Sent anomalies" [source]="anomalies">
+<app-range-panel heading="Sent anomalies" [source]="anomalies" [chart]="true">
   @if (anomalies.data(); as chart) {
     <app-time-series-chart
       [series]="chart.series"
@@ -30,35 +40,5 @@
       [stacked]="true"
       [unit]="chart.unit"
     />
-  }
-</app-range-panel>
-
-<app-range-panel heading="Errors and warnings" [source]="logSeries">
-  @if (logSeries.data(); as chart) {
-    <app-time-series-chart [series]="chart.series" type="bar" [unit]="chart.unit" />
-  }
-</app-range-panel>
-
-<app-range-panel heading="Top log sources" [source]="topSources">
-  @if (topSources.data(); as rows) {
-    <table mat-table [dataSource]="rows">
-      <ng-container matColumnDef="source">
-        <th mat-header-cell *matHeaderCellDef>Source</th>
-        <td mat-cell *matCellDef="let row">{{ row.source }}</td>
-      </ng-container>
-      <ng-container matColumnDef="error">
-        <th mat-header-cell *matHeaderCellDef>Errors</th>
-        <td mat-cell *matCellDef="let row">{{ row.error }}</td>
-      </ng-container>
-      <ng-container matColumnDef="warn">
-        <th mat-header-cell *matHeaderCellDef>Warnings</th>
-        <td mat-cell *matCellDef="let row">{{ row.warn }}</td>
-      </ng-container>
-      <tr mat-header-row *matHeaderRowDef="sourceColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: sourceColumns"></tr>
-      <tr class="empty-row" *matNoDataRow>
-        <td [attr.colspan]="sourceColumns.length">No data</td>
-      </tr>
-    </table>
   }
 </app-range-panel>

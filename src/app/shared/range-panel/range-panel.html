@@ -4,27 +4,34 @@
     @if (source().staleSince(); as staleSince) {
       <span class="stale">Stale since {{ staleSince | date: 'HH:mm' }}</span>
     }
-    @if (ranged()) {
-      <mat-button-toggle-group
-        class="range"
-        hideSingleSelectionIndicator
-        [value]="source().preset()"
-        (change)="source().setPreset($event.value)"
-        [attr.aria-label]="heading() + ' range'"
-      >
-        @for (preset of presets; track preset) {
-          <mat-button-toggle [value]="preset">{{ preset }}</mat-button-toggle>
-        }
-      </mat-button-toggle-group>
-    }
+    <div class="actions">
+      <ng-content select="[panelActions]" />
+      @if (ranged()) {
+        <mat-button-toggle-group
+          hideSingleSelectionIndicator
+          [value]="source().preset()"
+          (change)="source().setPreset($event.value)"
+          [attr.aria-label]="heading() + ' range'"
+        >
+          @for (preset of presets; track preset) {
+            <mat-button-toggle [value]="preset">{{ preset }}</mat-button-toggle>
+          }
+        </mat-button-toggle-group>
+      }
+    </div>
   </header>
-  <div class="body">
+  <div class="body" [class.chart]="chart()">
     <ng-content />
     @if (source().data() === null) {
       @if (source().error(); as error) {
         <p class="error" role="alert">Failed to load the data: {{ error }}</p>
       } @else {
-        <p class="loading">Loading…</p>
+        <mat-progress-spinner
+          class="loading"
+          mode="indeterminate"
+          diameter="32"
+          aria-label="Loading"
+        />
       }
     }
   </div>

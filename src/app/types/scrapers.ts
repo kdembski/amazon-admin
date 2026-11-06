@@ -1,21 +1,9 @@
-import { ScraperSeriesPoint } from './api-dtos';
+import { ScraperSeriesPoint, ScraperStatus } from './api-dtos';
 
 export type ScraperChartField = keyof Omit<ScraperSeriesPoint, 't' | 'requests'>;
 
-export interface ScraperStatusRow {
-  scraper: string;
+export interface ScraperStatusRow extends Omit<ScraperStatus, 'lastReportAt'> {
   lastReportAt: Date;
   minutesAgo: number;
   stopped: boolean;
 }
-
-export type BreakdownColumn =
-  | 'requests'
-  | 'itemsPerSecond'
-  | 'wastedPercent'
-  | 'captchaPercent'
-  | 'attemptsPerItem'
-  | 'bytesIn'
-  | 'bytesOut'
-  | 'connections'
-  | 'reusePercent';

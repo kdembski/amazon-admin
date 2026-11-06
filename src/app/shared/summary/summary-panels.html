@@ -16,7 +16,7 @@
             <div class="tile">
               <span class="label">{{ tile.label }}</span>
               <div class="headline">
-                <strong class="value">{{ formatNumber(tile.value, 0) }}</strong>
+                <strong class="value">{{ formatNumber(tile.value, tile.digits ?? 0) }}</strong>
                 <ng-container
                   *ngTemplateOutlet="changeBadge; context: { $implicit: tile.change }"
                 />
@@ -27,7 +27,12 @@
                   @for (detail of tile.details; track detail.label) {
                     <div class="detail">
                       <dt>{{ detail.label }}</dt>
-                      <dd class="value">{{ formatNumber(detail.value, 0) }}</dd>
+                      <dd class="value">
+                        {{ formatNumber(detail.value, tile.digits ?? 0) }}
+                        @if (detail.share !== undefined) {
+                          <span class="share">{{ detail.share }}%</span>
+                        }
+                      </dd>
                       @if (withChange) {
                         <dd>
                           <ng-container

@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { LegendItem } from 'chart.js';
 import { TimeSeriesChart } from '@app/shared/charts/time-series-chart';
 import { ChartSeries } from '@app/types/chart';
 
@@ -53,9 +54,31 @@ describe('TimeSeriesChart', () => {
     expect(chart.options().plugins.legend.display).toBe(false);
   });
 
+  it('hides a switched off series from the plot and the legend', async () => {
+    const { chart } = await render([
+      { label: 'A', points: [{ t, value: 1 }] },
+      { label: 'B', hidden: true, points: [{ t, value: 1 }] },
+    ]);
+    const { filter } = chart.options().plugins.legend.labels;
+
+    expect(chart.data().datasets.map((d) => d.hidden)).toEqual([undefined, true]);
+    expect(filter({ datasetIndex: 0 } as LegendItem)).toBe(true);
+    expect(filter({ datasetIndex: 1 } as LegendItem)).toBe(false);
+  });
+
   it('is not stacked by default', async () => {
     const { chart } = await render([{ label: 'A', points: [{ t, value: 1 }] }]);
 
     expect(chart.options().scales.x).toMatchObject({ stacked: false, time: { unit: 'hour' } });
+  });
+
+  it('labels the points only when asked', async () => {
+    const series = [{ label: 'A', points: [{ t, value: 1 }] }];
+    const { chart } = await render(series);
+    const labeled = await render(series, { pointLabels: true });
+
+    expect(chart.data().datasets[0].pointRadius).toBe(0);
+    expect(labeled.chart.data().datasets[0].pointRadius).toBe(3);
+    expect(labeled.chart.options().layout.padding.top).toBe(20);
   });
 });

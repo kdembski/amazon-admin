@@ -4,12 +4,17 @@
 }
 
 h1 {
-  margin: 0;
+  margin: 0 0 16px;
   font-size: 1.5rem;
 }
 
-.loading {
-  color: var(--mat-sys-on-surface-variant);
+// The height of the loaded tiles on a wide screen, so the page does not jump.
+.summary {
+  --summary-height: 325px;
+
+  display: grid;
+  align-content: center;
+  min-height: var(--summary-height);
 }
 
 .error {
@@ -17,9 +22,4 @@ h1 {
   border-radius: var(--mat-sys-corner-medium);
   background: var(--mat-sys-error-container);
   color: var(--mat-sys-on-error-container);
-}
-
-.empty-row td {
-  padding: 1rem;
-  color: var(--mat-sys-on-surface-variant);
 }

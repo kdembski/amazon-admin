@@ -45,6 +45,63 @@ describe('SummaryPanels', () => {
     expect(second.querySelector('.details')).toBeNull();
   });
 
+  it('formats the tile and its details with the decimal places of the tile', async () => {
+    const element = await render([
+      {
+        name: 'Last hour',
+        tiles: [
+          {
+            label: 'Items/s',
+            value: 1.5,
+            change: null,
+            digits: 2,
+            details: [{ label: 'amazon-pdp', value: 0.25, change: null }],
+          },
+        ],
+      },
+    ]);
+
+    expect(element.querySelector('.headline .value')?.textContent).toBe('1,50');
+    expect(element.querySelector('.detail .value')?.textContent?.trim()).toBe('0,25');
+  });
+
+  it('shows the share of a detail only when it has one', async () => {
+    const element = await render([
+      {
+        name: 'Last hour',
+        tiles: [
+          {
+            label: 'Transfer',
+            value: 3,
+            change: null,
+            details: [
+              { label: 'Proxy', value: 1, change: null, share: 33 },
+              { label: 'Other', value: 2, change: null },
+            ],
+          },
+        ],
+      },
+    ]);
+    const [proxy, other] = element.querySelectorAll('.detail');
+
+    expect(proxy.querySelector('.share')?.textContent).toBe('33%');
+    expect(other.querySelector('.share')).toBeNull();
+  });
+
+  it('puts a tile into the column it names', async () => {
+    const tile = (label: string, column: 0 | 1) => {
+      return { label, value: 1, change: null, column, details: [] };
+    };
+    const element = await render([
+      { name: 'Last hour', tiles: [tile('a', 0), tile('b', 0), tile('c', 0), tile('d', 1)] },
+    ]);
+
+    const columns = [...element.querySelectorAll('.column')].map((column) =>
+      [...column.querySelectorAll('.tile .label')].map((label) => label.textContent),
+    );
+    expect(columns).toEqual([['a', 'b', 'c'], ['d']]);
+  });
+
   it('puts the tiles alternately into two columns', async () => {
     const detail = (label: string) => ({ label, value: 1, change: null });
     const element = await render([

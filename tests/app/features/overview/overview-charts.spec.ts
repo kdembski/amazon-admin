@@ -1,11 +1,10 @@
 import {
   toAdChangeSeries,
   toAnomalySeries,
-  toLogSeries,
   toScrapedSeries,
   toSummaryTiles,
 } from '@app/features/overview/overview-charts';
-import { ActivityStatsDto, LogStatsDto } from '@app/types/api-dtos';
+import { ActivityStatsDto } from '@app/types/api-dtos';
 
 const range = {
   from: new Date('2026-10-26T10:00:00.000Z'),
@@ -44,16 +43,6 @@ const activity: ActivityStatsDto = {
   },
   comparable: { minPrices: 3, total: 10, previousTotal: 5 },
   countryOutlierChannels: [{ id: '1', name: 'outliers-de' }],
-};
-
-const logs: LogStatsDto = {
-  series: [
-    { level: 'error', points: [{ t: hour(12).toISOString(), value: 2 }] },
-    { level: 'warn', points: [] },
-  ],
-  totals: { error: 2, warn: 0 },
-  previousTotals: { error: 1, warn: 5 },
-  topSources: [],
 };
 
 describe('toScrapedSeries', () => {
@@ -116,15 +105,6 @@ describe('toAdChangeSeries', () => {
       ['New ads', [0, 6, 0]],
       ['Deleted ads', [0, 0, 0]],
     ]);
-  });
-});
-
-describe('toLogSeries', () => {
-  it('returns errors and warnings', () => {
-    const series = toLogSeries(logs, range, 'hour');
-
-    expect(series.map((s) => s.label)).toEqual(['Errors', 'Warnings']);
-    expect(series[0].points.map((p) => p.value)).toEqual([0, 0, 2]);
   });
 });
 

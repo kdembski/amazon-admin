@@ -1,13 +1,21 @@
-import { inject } from '@angular/core';
-import { signalStore } from '@ngrx/signals';
+import { computed, inject } from '@angular/core';
+import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { map } from 'rxjs';
 import { ScrapersApiService } from '@app/core/api/scrapers-api-service';
-import { chartStore } from '@app/shared/charts/chart-store';
+import { chartStore, withChart } from '@app/shared/charts/chart-store';
 import { withPolling } from '@app/shared/polling/with-polling';
-import { ScraperBreakdownKey } from '@app/types/api-dtos';
+import { ScraperCountKey, ScraperCountPoint } from '@app/types/api-dtos';
 import { ScraperChartField } from '@app/types/scrapers';
 import { TimeRange } from '@app/types/time-range';
-import { toScraperSeries, toScraperStatuses } from './scraper-charts';
+import {
+  attemptsPerItem,
+  requestPercent,
+  directMegabytes,
+  proxyMegabytes,
+  toCountSeries,
+  toScraperSeries,
+  toScraperStatuses,
+} from './scraper-charts';
 
 // Every panel has its own range, so each one loads on its own.
 const series = () => {
@@ -20,32 +28,87 @@ const seriesChart = (field: ScraperChartField) => {
   return chartStore(series, (dto, range, unit) => toScraperSeries(dto, range, unit, field));
 };
 
-const breakdown = (by: ScraperBreakdownKey) => {
-  return signalStore(
-    withPolling(() => {
-      const api = inject(ScrapersApiService);
+const countSeries = () => {
+  const api = inject(ScrapersApiService);
 
-      return (range: TimeRange) => api.getBreakdown(range, by);
-    }),
+  return (range: TimeRange) => api.getCountSeries(range);
+};
+
+// One line per country or per scraper, switched without a reload.
+const groupedChart = (value: (point: ScraperCountPoint) => number) => {
+  return signalStore(
+    withChart(countSeries, (dto, range, unit) => ({
+      country: toCountSeries(dto.country, range, unit, { '': value }),
+      scraper: toCountSeries(dto.scraper, range, unit, { '': value }),
+    })),
+    withState({ group: 'country' as ScraperCountKey }),
+    withComputed(({ data, group }) => ({
+      chart: computed(() => {
+        const loaded = data();
+
+        return loaded && { unit: loaded.unit, series: loaded.series[group()] };
+      }),
+    })),
+    withMethods((store) => ({
+      setGroup: (group: ScraperCountKey) => patchState(store, { group }),
+    })),
   );
 };
 
 export const ItemsStore = seriesChart('itemsPerSecond');
 
-export const WastedStore = seriesChart('wastedPercent');
+export const WastedStore = groupedChart(requestPercent((point) => point.wasted));
 
-export const CaptchaStore = seriesChart('captchaPercent');
+export const CaptchaStore = groupedChart(requestPercent((point) => point.captcha));
 
-export const FlowStore = breakdown('flow');
+export const Http503Store = groupedChart(requestPercent((point) => point.http503));
 
-export const CountryStore = breakdown('country');
+export const AttemptsStore = groupedChart(attemptsPerItem);
 
-export const SummaryTableStore = signalStore(
-  withPolling(() => {
-    const api = inject(ScrapersApiService);
+// A switched off country stays in the series, so the other lines keep their colors.
+export const TransferStore = signalStore(
+  withChart(countSeries, (dto, range, unit) =>
+    dto.country.map((country) => ({
+      country: country.group,
+      series: toCountSeries([country], range, unit, {
+        proxy: proxyMegabytes,
+        direct: directMegabytes,
+      }),
+    })),
+  ),
+  withState({ hiddenCountries: [] as string[] }),
+  withComputed(({ data, hiddenCountries }) => {
+    const countries = computed(() => data()?.series.map(({ country }) => country) ?? []);
 
-    return (range: TimeRange) => api.getSummaries(range);
+    return {
+      countries,
+      visibleCountries: computed(() => {
+        return countries().filter((country) => !hiddenCountries().includes(country));
+      }),
+      chart: computed(() => {
+        const loaded = data();
+
+        return (
+          loaded && {
+            unit: loaded.unit,
+            series: loaded.series.flatMap(({ country, series }) => {
+              return series.map((line) => ({
+                ...line,
+                hidden: hiddenCountries().includes(country),
+              }));
+            }),
+          }
+        );
+      }),
+    };
   }),
+  withMethods((store) => ({
+    setVisibleCountries: (visible: string[]) => {
+      patchState(store, {
+        hiddenCountries: store.countries().filter((country) => !visible.includes(country)),
+      });
+    },
+  })),
 );
 
 // The statuses ignore the range; their age is measured when they arrive.

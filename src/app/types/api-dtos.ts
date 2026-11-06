@@ -2,7 +2,6 @@
 
 export type ActivityEventType =
   'ad_scraped' | 'country_outlier_sent' | 'price_drop_sent' | 'ad_created' | 'ad_deleted';
-export type LogLevel = 'error' | 'warn';
 
 export interface TimePoint {
   t: string;
@@ -25,20 +24,6 @@ export interface ActivityStatsDto {
   countryOutlierChannels: { id: string; name: string }[];
 }
 
-export interface LogLevelCounts {
-  error: number;
-  warn: number;
-}
-
-export interface LogStatsDto {
-  series: { level: LogLevel; points: TimePoint[] }[];
-  totals: LogLevelCounts;
-  previousTotals: LogLevelCounts;
-  topSources: ({ source: string } & LogLevelCounts)[];
-}
-
-export type ScraperBreakdownKey = 'country' | 'flow';
-
 export interface ScraperMetrics {
   itemsPerSecond: number;
   requests: number;
@@ -56,17 +41,24 @@ export interface ScraperMetricSummary extends ScraperMetrics {
   scraper: string;
   itemsPerSecondDiff: number;
   previousRequests: number;
+  // bytes_in + bytes_out through proxies and over direct connections
+  proxyBytes: number;
+  previousProxyBytes: number;
+  directBytes: number;
+  previousDirectBytes: number;
 }
 
-// connections and bytes carry no country: per country they are 0 and kbPerItem and reusePercent mean nothing
-export interface ScraperBreakdown extends ScraperMetrics {
-  scraper: string;
-  group: string;
-}
-
+// Averages of the last hour: rates over the whole hour, gauges over its reports; rps and concurrency from ScraperConfig, scrapers without a row are left out
 export interface ScraperStatus {
   scraper: string;
   lastReportAt: string;
+  itemsPerSecond: number;
+  requestsPerSecond: number;
+  // 0 = no limit
+  rps: number;
+  pending: number;
+  concurrency: number;
+  openConnections: number;
 }
 
 export interface ScraperSeriesPoint {
@@ -81,3 +73,26 @@ export interface ScraperSeries {
   scraper: string;
   points: ScraperSeriesPoint[];
 }
+
+export type ScraperCountKey = 'scraper' | 'country';
+
+// Counts of one UTC hour; summed into days before dividing them
+export interface ScraperCountPoint {
+  t: string;
+  requests: number;
+  wasted: number;
+  captcha: number;
+  http503: number;
+  items: number;
+  itemAttempts: number;
+  proxyBytes: number;
+  directBytes: number;
+}
+
+export interface ScraperCountSeries {
+  group: string;
+  points: ScraperCountPoint[];
+}
+
+// The same counts per scraper (every country) and per country (every scraper)
+export type ScraperCountSeriesByKey = Record<ScraperCountKey, ScraperCountSeries[]>;

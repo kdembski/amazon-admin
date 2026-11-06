@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 import { ScrapersApiService } from '@app/core/api/scrapers-api-service';
 import { ScraperSummaryStore } from '@app/features/scrapers/scraper-summary-store';
 import { ScraperMetricSummary } from '@app/types/api-dtos';
+import { SummaryTile } from '@app/types/summary';
 import { TimeRange } from '@app/types/time-range';
 
 @Component({ template: '' })
@@ -47,7 +48,9 @@ describe('ScraperSummaryStore', () => {
     const { api, store } = setup();
 
     expect(api.getSummaries).toHaveBeenCalledWith({ from: hourFrom, to: now });
-    expect(store.data()!.map((period) => [period.name, period.tiles[0].value])).toEqual([
+    const requests = (tiles: SummaryTile[]) => tiles.find((tile) => tile.label === 'Requests');
+
+    expect(store.data()!.map((period) => [period.name, requests(period.tiles)?.value])).toEqual([
       ['Last hour', 20],
       ['Last 24 h', 240],
     ]);

@@ -1,14 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { StatsApiService } from '@app/core/api/stats-api-service';
-import {
-  AdChangeStore,
-  AnomalyStore,
-  LogSeriesStore,
-  ScrapedStore,
-  TopSourcesStore,
-} from '@app/features/overview/overview-store';
-import { ActivityStatsDto, LogStatsDto } from '@app/types/api-dtos';
+import { AdChangeStore, AnomalyStore, ScrapedStore } from '@app/features/overview/overview-store';
+import { ActivityStatsDto } from '@app/types/api-dtos';
 
 const start = new Date('2026-10-26T10:00:00.000Z');
 
@@ -33,34 +27,20 @@ const activity: ActivityStatsDto = {
   countryOutlierChannels: [],
 };
 
-const logs: LogStatsDto = {
-  series: [
-    { level: 'error', points: [] },
-    { level: 'warn', points: [] },
-  ],
-  totals: { error: 0, warn: 0 },
-  previousTotals: { error: 0, warn: 0 },
-  topSources: [{ source: 'A', error: 1, warn: 2 }],
-};
-
 const setup = () => {
-  const api = { getActivity: vi.fn(() => of(activity)), getLogs: vi.fn(() => of(logs)) };
+  const api = { getActivity: vi.fn(() => of(activity)) };
   TestBed.configureTestingModule({
     providers: [
       { provide: StatsApiService, useValue: api },
       ScrapedStore,
       AdChangeStore,
       AnomalyStore,
-      LogSeriesStore,
-      TopSourcesStore,
     ],
   });
   const stores = {
     scraped: TestBed.inject(ScrapedStore),
     adChange: TestBed.inject(AdChangeStore),
     anomalies: TestBed.inject(AnomalyStore),
-    logSeries: TestBed.inject(LogSeriesStore),
-    topSources: TestBed.inject(TopSourcesStore),
   };
   TestBed.tick();
   return { api, ...stores };
@@ -74,15 +54,13 @@ describe('overview stores', () => {
 
   afterEach(() => vi.useRealTimers());
 
-  it('derive the charts and the top sources from the last day', () => {
-    const { scraped, adChange, anomalies, logSeries, topSources } = setup();
+  it('derive the charts from the last day', () => {
+    const { scraped, adChange, anomalies } = setup();
 
     expect(scraped.data()?.unit).toBe('hour');
     expect(scraped.data()?.series[0].points).toHaveLength(24);
     expect(adChange.data()?.series.map((s) => s.label)).toEqual(['New ads', 'Deleted ads']);
     expect(anomalies.data()?.series).toEqual([]);
-    expect(logSeries.data()?.series.map((s) => s.label)).toEqual(['Errors', 'Warnings']);
-    expect(topSources.data()).toEqual([{ source: 'A', error: 1, warn: 2 }]);
   });
 
   it('reload only the panel whose preset changed', () => {

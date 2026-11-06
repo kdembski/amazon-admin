@@ -12,15 +12,17 @@
   }
 }
 
-.range {
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
   margin-left: auto;
-  --mat-button-toggle-height: 28px;
-  --mat-button-toggle-label-text-size: 12px;
 }
 
 .body {
   padding: 16px;
-  border: 1px solid var(--mat-sys-outline-variant);
+  border: 1px solid var(--app-border);
   border-radius: var(--mat-sys-corner-medium);
   background: var(--mat-sys-surface-container-low);
   --mat-table-background-color: transparent;
@@ -34,9 +36,15 @@
   font-size: 12px;
 }
 
+.chart {
+  display: grid;
+  align-content: center;
+  // The height of TimeSeriesChart.
+  min-height: 288px;
+}
+
 .loading {
-  margin: 0;
-  color: var(--mat-sys-on-surface-variant);
+  margin: 0 auto;
 }
 
 .error {
