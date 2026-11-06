@@ -1,7 +1,7 @@
 import 'chartjs-adapter-date-fns';
 import { Component, computed, input } from '@angular/core';
 import { pl } from 'date-fns/locale';
-import { Plugin } from 'chart.js';
+import { LegendItem, Plugin } from 'chart.js';
 import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { formatCompact } from '@app/shared/format/format-number';
 import { ChartSeries } from '@app/types/chart';
@@ -99,6 +99,7 @@ export class TimeSeriesChart {
 
       return {
         label: series.label,
+        hidden: series.hidden,
         data: series.points.map((point) => ({ x: point.t.getTime(), y: point.value })),
         borderColor: color,
         backgroundColor: this.fill() ? `${color}33` : color,
@@ -119,7 +120,16 @@ export class TimeSeriesChart {
       // Room for the point labels above the highest point.
       layout: { padding: { top: this.pointLabels() ? 20 : 0 } },
       interaction: { mode: 'index' as const, intersect: false },
-      plugins: { legend: { display: this.series().length > 1, labels: { color: text } } },
+      plugins: {
+        legend: {
+          display: this.series().length > 1,
+          labels: {
+            color: text,
+            // Series switched off by the caller leave the legend; ones clicked off in it stay.
+            filter: (item: LegendItem) => !this.series()[item.datasetIndex ?? 0].hidden,
+          },
+        },
+      },
       scales: {
         x: {
           type: 'time' as const,

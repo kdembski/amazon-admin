@@ -15,7 +15,7 @@
   }
 </section>
 
-<app-range-panel heading="Status" [source]="statuses" [ranged]="false">
+<app-range-panel heading="Status (last hour average)" [source]="statuses" [ranged]="false">
   @if (statuses.data(); as rows) {
     <app-scraper-status-list [rows]="rows" />
   }
@@ -56,7 +56,19 @@
 </app-range-panel>
 
 <app-range-panel heading="Transfer in + out (MB) per country" [source]="transfer" [chart]="true">
-  @if (transfer.data(); as chart) {
+  <mat-button-toggle-group
+    panelActions
+    multiple
+    hideMultipleSelectionIndicator
+    aria-label="Transfer countries"
+    [value]="transfer.visibleCountries()"
+    (change)="transfer.setVisibleCountries($event.value)"
+  >
+    @for (country of transfer.countries(); track country) {
+      <mat-button-toggle [value]="country">{{ country }}</mat-button-toggle>
+    }
+  </mat-button-toggle-group>
+  @if (transfer.chart(); as chart) {
     <app-time-series-chart [series]="chart.series" [unit]="chart.unit" />
   }
 </app-range-panel>

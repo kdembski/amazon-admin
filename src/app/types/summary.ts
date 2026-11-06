@@ -3,6 +3,8 @@ export interface SummaryStat {
   value: number;
   // Percent change against the previous period of the same length; null when that was 0.
   change: number | null;
+  // Percent of the whole tile, for a breakdown whose parts add up to it.
+  share?: number;
 }
 
 export interface SummaryTile extends SummaryStat {

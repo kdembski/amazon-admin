@@ -130,6 +130,9 @@ export const toScraperTiles = (
   const previousProxy = megabytes(total((summary) => summary.previousProxyBytes));
   const direct = megabytes(total((summary) => summary.directBytes));
   const previousDirect = megabytes(total((summary) => summary.previousDirectBytes));
+  const shareOfTransfer = (part: number) => {
+    return proxy + direct > 0 ? Math.round((part / (proxy + direct)) * 100) : 0;
+  };
 
   return [
     tile(
@@ -154,7 +157,10 @@ export const toScraperTiles = (
       ...stat('Transfer in + out (MB)', proxy + direct, previousProxy + previousDirect),
       digits: 1,
       column: 1,
-      details: [stat('Proxy', proxy, previousProxy), stat('Direct', direct, previousDirect)],
+      details: [
+        { ...stat('Proxy', proxy, previousProxy), share: shareOfTransfer(proxy) },
+        { ...stat('Direct', direct, previousDirect), share: shareOfTransfer(direct) },
+      ],
     },
   ];
 };

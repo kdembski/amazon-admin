@@ -43,19 +43,14 @@ describe('ScraperStatusList', () => {
     const row = firstRow(element);
     const headers = [...element.querySelectorAll('th')].map((th) => th.textContent?.trim());
 
-    expect(headers).toEqual([
-      'Scraper',
-      'Items/s',
-      'RPS / limit',
-      'Pending / concurrency',
-      'Open connections',
-    ]);
+    expect(headers).toEqual(['Scraper', 'Items/s', 'RPS', 'Pending', 'Connections']);
     expect(row.classList).not.toContain('stopped');
-    expect(row.querySelector('.dot')?.getAttribute('aria-label')).toBe('Running');
-    expect(row.querySelector('.dot')?.getAttribute('title')).toBe(
+    expect(row.querySelector('.status')?.getAttribute('title')).toBe(
       'Running, last report 26.10 11:59',
     );
-    expect(cells(row)).toEqual(['amazon-pdp-1', '12,3', '7,5 / 10', '45 / 50', '23']);
+    expect(row.querySelector('.status')?.textContent?.trim()).toBe('Running');
+    expect(cells(row)[0]).toContain('amazon-pdp-1');
+    expect(cells(row).slice(1)).toEqual(['12,3', '7,5 / 10', '45 / 50', '23']);
   });
 
   it('shows the usage of the limits as bars, full above the limit', async () => {
@@ -68,16 +63,13 @@ describe('ScraperStatusList', () => {
   });
 
   it('marks a stopped scraper and leaves out the bars without a limit', async () => {
-    const element = await render([
-      status({ stopped: true, minutesAgo: 20, rps: 0, concurrency: null }),
-    ]);
+    const element = await render([status({ stopped: true, minutesAgo: 20, rps: 0 })]);
     const row = firstRow(element);
 
     expect(row.classList).toContain('stopped');
-    expect(row.querySelector('.dot')?.getAttribute('aria-label')).toBe('No reports for 20 min');
+    expect(row.querySelector('.status')?.textContent?.trim()).toBe('Stopped');
     expect(cells(row)[2]).toBe('7,5 / ∞');
-    expect(cells(row)[3]).toBe('45 / —');
-    expect(bars(row)).toEqual([]);
+    expect(bars(row)).toEqual([['amazon-pdp-1 pending usage', '90']]);
   });
 
   it('says so without reports', async () => {

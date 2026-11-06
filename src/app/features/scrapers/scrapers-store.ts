@@ -34,12 +34,6 @@ const countSeries = () => {
   return (range: TimeRange) => api.getCountSeries(range);
 };
 
-const countryChart = (lines: Record<string, (point: ScraperCountPoint) => number>) => {
-  return chartStore(countSeries, (dto, range, unit) =>
-    toCountSeries(dto.country, range, unit, lines),
-  );
-};
-
 // One line per country or per scraper, switched without a reload.
 const groupedChart = (value: (point: ScraperCountPoint) => number) => {
   return signalStore(
@@ -71,7 +65,51 @@ export const Http503Store = groupedChart(requestPercent((point) => point.http503
 
 export const AttemptsStore = groupedChart(attemptsPerItem);
 
-export const TransferStore = countryChart({ proxy: proxyMegabytes, direct: directMegabytes });
+// A switched off country stays in the series, so the other lines keep their colors.
+export const TransferStore = signalStore(
+  withChart(countSeries, (dto, range, unit) =>
+    dto.country.map((country) => ({
+      country: country.group,
+      series: toCountSeries([country], range, unit, {
+        proxy: proxyMegabytes,
+        direct: directMegabytes,
+      }),
+    })),
+  ),
+  withState({ hiddenCountries: [] as string[] }),
+  withComputed(({ data, hiddenCountries }) => {
+    const countries = computed(() => data()?.series.map(({ country }) => country) ?? []);
+
+    return {
+      countries,
+      visibleCountries: computed(() => {
+        return countries().filter((country) => !hiddenCountries().includes(country));
+      }),
+      chart: computed(() => {
+        const loaded = data();
+
+        return (
+          loaded && {
+            unit: loaded.unit,
+            series: loaded.series.flatMap(({ country, series }) => {
+              return series.map((line) => ({
+                ...line,
+                hidden: hiddenCountries().includes(country),
+              }));
+            }),
+          }
+        );
+      }),
+    };
+  }),
+  withMethods((store) => ({
+    setVisibleCountries: (visible: string[]) => {
+      patchState(store, {
+        hiddenCountries: store.countries().filter((country) => !visible.includes(country)),
+      });
+    },
+  })),
+);
 
 // The statuses ignore the range; their age is measured when they arrive.
 export const StatusStore = signalStore(

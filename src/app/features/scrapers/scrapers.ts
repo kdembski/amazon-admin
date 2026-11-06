@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { TimeSeriesChart } from '@app/shared/charts/time-series-chart';
 import { RangePanel } from '@app/shared/range-panel/range-panel';
 import { RememberedHeight } from '@app/shared/summary/remembered-height';
@@ -21,6 +22,7 @@ import {
   selector: 'app-scrapers',
   imports: [
     GroupToggle,
+    MatButtonToggleModule,
     RangePanel,
     RememberedHeight,
     ScraperStatusList,

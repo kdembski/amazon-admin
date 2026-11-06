@@ -5,7 +5,7 @@ import { MatTableModule } from '@angular/material/table';
 import { formatNumber } from '@app/shared/format/format-number';
 import { ScraperStatusRow } from '@app/types/scrapers';
 
-// One table row per scraper: a status dot, then the live rates against their limits.
+// One table row per scraper: a status badge, then the last hour averages against their limits.
 @Component({
   selector: 'app-scraper-status-list',
   imports: [DatePipe, MatProgressBar, MatTableModule],
@@ -18,17 +18,13 @@ export class ScraperStatusList {
   protected readonly formatNumber = formatNumber;
   protected readonly columns = ['scraper', 'itemsPerSecond', 'rps', 'pending', 'openConnections'];
 
-  // rps 0 means the scraper runs without a limit; null means it has no config row.
-  protected limit(value: number | null) {
-    if (value === null) {
-      return '—';
-    }
-
+  // 0 means the scraper runs without a limit.
+  protected limit(value: number) {
     return value === 0 ? '∞' : formatNumber(value, 0);
   }
 
   // Null without a limit to measure against, so the row shows no bar.
-  protected usage(value: number, limit: number | null) {
+  protected usage(value: number, limit: number) {
     return limit ? Math.min(100, (value / limit) * 100) : null;
   }
 }

@@ -8,6 +8,7 @@ export interface ChartPoint {
 
 export interface ChartSeries {
   label: string;
+  hidden?: boolean;
   points: ChartPoint[];
 }
 

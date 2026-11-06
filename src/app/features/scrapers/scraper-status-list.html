@@ -3,15 +3,15 @@
     <ng-container matColumnDef="scraper">
       <th mat-header-cell *matHeaderCellDef>Scraper</th>
       <td mat-cell *matCellDef="let row">
-        @let state = row.stopped ? 'No reports for ' + row.minutesAgo + ' min' : 'Running';
+        @let state = row.stopped ? 'Stopped' : 'Running';
         <div class="name">
-          <span
-            class="dot"
-            role="img"
-            [attr.aria-label]="state"
-            [title]="state + ', last report ' + (row.lastReportAt | date: 'dd.MM HH:mm')"
-          ></span>
           {{ row.scraper }}
+          <span
+            class="status"
+            [title]="state + ', last report ' + (row.lastReportAt | date: 'dd.MM HH:mm')"
+          >
+            {{ state }}
+          </span>
         </div>
       </td>
     </ng-container>
@@ -20,25 +20,33 @@
       <td mat-cell *matCellDef="let row">{{ formatNumber(row.itemsPerSecond, 1) }}</td>
     </ng-container>
     <ng-container matColumnDef="rps">
-      <th mat-header-cell *matHeaderCellDef>RPS / limit</th>
+      <th mat-header-cell *matHeaderCellDef>RPS</th>
       <td mat-cell *matCellDef="let row">
-        {{ formatNumber(row.requestsPerSecond, 1) }} / {{ limit(row.rps) }}
-        @if (usage(row.requestsPerSecond, row.rps); as value) {
-          <mat-progress-bar [value]="value" [attr.aria-label]="row.scraper + ' RPS usage'" />
-        }
+        <div class="usage">
+          @if (usage(row.requestsPerSecond, row.rps); as value) {
+            <mat-progress-bar [value]="value" [attr.aria-label]="row.scraper + ' RPS usage'" />
+          }
+          <span class="count">
+            {{ formatNumber(row.requestsPerSecond, 1) }} / {{ limit(row.rps) }}
+          </span>
+        </div>
       </td>
     </ng-container>
     <ng-container matColumnDef="pending">
-      <th mat-header-cell *matHeaderCellDef>Pending / concurrency</th>
+      <th mat-header-cell *matHeaderCellDef>Pending</th>
       <td mat-cell *matCellDef="let row">
-        {{ formatNumber(row.pending, 0) }} / {{ limit(row.concurrency) }}
-        @if (usage(row.pending, row.concurrency); as value) {
-          <mat-progress-bar [value]="value" [attr.aria-label]="row.scraper + ' pending usage'" />
-        }
+        <div class="usage">
+          @if (usage(row.pending, row.concurrency); as value) {
+            <mat-progress-bar [value]="value" [attr.aria-label]="row.scraper + ' pending usage'" />
+          }
+          <span class="count">
+            {{ formatNumber(row.pending, 0) }} / {{ limit(row.concurrency) }}
+          </span>
+        </div>
       </td>
     </ng-container>
     <ng-container matColumnDef="openConnections">
-      <th mat-header-cell *matHeaderCellDef>Open connections</th>
+      <th mat-header-cell *matHeaderCellDef>Connections</th>
       <td mat-cell *matCellDef="let row">{{ formatNumber(row.openConnections, 0) }}</td>
     </ng-container>
     <tr mat-header-row *matHeaderRowDef="columns"></tr>

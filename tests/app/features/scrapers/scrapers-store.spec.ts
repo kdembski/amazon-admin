@@ -132,10 +132,30 @@ describe('scraper stores', () => {
     expect(values(captcha.chart())).toEqual([['de', 2]]);
     expect(values(http503.chart())).toEqual([['de', 5]]);
     expect(values(attempts.chart())).toEqual([['de', 1.5]]);
-    expect(values(transfer.data())).toEqual([
+    expect(values(transfer.chart())).toEqual([
       ['de proxy', 3],
       ['de direct', 1],
     ]);
+  });
+
+  it('switch the countries of the transfer chart off and on without a reload', () => {
+    const { api, transfer } = setup();
+    const calls = api.getCountSeries.mock.calls.length;
+    const hidden = () => transfer.chart()?.series.map((line) => line.hidden);
+
+    expect(transfer.countries()).toEqual(['de']);
+    expect(transfer.visibleCountries()).toEqual(['de']);
+    expect(hidden()).toEqual([false, false]);
+
+    transfer.setVisibleCountries([]);
+
+    expect(transfer.visibleCountries()).toEqual([]);
+    expect(hidden()).toEqual([true, true]);
+
+    transfer.setVisibleCountries(['de']);
+
+    expect(hidden()).toEqual([false, false]);
+    expect(api.getCountSeries.mock.calls.length).toBe(calls);
   });
 
   it('switch a grouped chart between countries and scrapers without a reload', () => {

@@ -173,10 +173,19 @@ describe('toScraperTiles', () => {
       digits: 1,
       column: 1,
       details: [
-        { label: 'Proxy', value: 400, change: 100 },
-        { label: 'Direct', value: 200, change: 0 },
+        { label: 'Proxy', value: 400, change: 100, share: 67 },
+        { label: 'Direct', value: 200, change: 0, share: 33 },
       ],
     });
+  });
+
+  it('shows a share of 0 without any transfer', () => {
+    const [, , , transfer] = toScraperTiles([], {
+      from: new Date('2026-11-05T10:00:00Z'),
+      to: new Date('2026-11-05T10:01:40Z'),
+    });
+
+    expect(transfer.details.map((detail) => detail.share)).toEqual([0, 0]);
   });
 });
 

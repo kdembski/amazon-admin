@@ -48,16 +48,16 @@ export interface ScraperMetricSummary extends ScraperMetrics {
   previousDirectBytes: number;
 }
 
-// Rates and gauges of the newest report; rps and concurrency from ScraperConfig, null without a row
+// Averages of the last hour: rates over the whole hour, gauges over its reports; rps and concurrency from ScraperConfig, scrapers without a row are left out
 export interface ScraperStatus {
   scraper: string;
   lastReportAt: string;
   itemsPerSecond: number;
   requestsPerSecond: number;
   // 0 = no limit
-  rps: number | null;
+  rps: number;
   pending: number;
-  concurrency: number | null;
+  concurrency: number;
   openConnections: number;
 }
 

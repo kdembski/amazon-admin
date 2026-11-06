@@ -27,7 +27,7 @@
   align-content: start;
   gap: 4px;
   padding: 10px 12px;
-  border: 1px solid var(--mat-sys-outline-variant);
+  border: 1px solid var(--app-border);
   border-radius: var(--mat-sys-corner-medium);
   background: var(--mat-sys-surface-container-low);
 
@@ -50,7 +50,7 @@
 .details {
   margin: 4px 0 0;
   padding-top: 6px;
-  border-top: 1px solid var(--mat-sys-outline-variant);
+  border-top: 1px solid var(--app-border);
   font-size: 13px;
 }
 
@@ -77,6 +77,16 @@
 .value {
   font-weight: 500;
   font-variant-numeric: tabular-nums;
+}
+
+// A fixed width lines the shares of all rows up.
+.share {
+  display: inline-block;
+  min-width: 32px;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 12px;
+  font-weight: 400;
+  text-align: right;
 }
 
 .change {

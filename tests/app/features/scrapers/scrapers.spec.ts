@@ -91,10 +91,10 @@ describe('Scrapers', () => {
       ],
     );
 
-    expect(element.querySelector('app-range-panel h2')?.textContent).toBe('Status');
-    expect(element.querySelector('tr.stopped .dot')?.getAttribute('aria-label')).toContain(
-      'No reports for',
+    expect(element.querySelector('app-range-panel h2')?.textContent).toBe(
+      'Status (last hour average)',
     );
+    expect(element.querySelector('tr.stopped .status')?.textContent).toContain('Stopped');
   });
 
   it('has only the status table', async () => {

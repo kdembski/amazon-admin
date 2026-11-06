@@ -62,7 +62,30 @@ describe('SummaryPanels', () => {
     ]);
 
     expect(element.querySelector('.headline .value')?.textContent).toBe('1,50');
-    expect(element.querySelector('.detail .value')?.textContent).toBe('0,25');
+    expect(element.querySelector('.detail .value')?.textContent?.trim()).toBe('0,25');
+  });
+
+  it('shows the share of a detail only when it has one', async () => {
+    const element = await render([
+      {
+        name: 'Last hour',
+        tiles: [
+          {
+            label: 'Transfer',
+            value: 3,
+            change: null,
+            details: [
+              { label: 'Proxy', value: 1, change: null, share: 33 },
+              { label: 'Other', value: 2, change: null },
+            ],
+          },
+        ],
+      },
+    ]);
+    const [proxy, other] = element.querySelectorAll('.detail');
+
+    expect(proxy.querySelector('.share')?.textContent).toBe('33%');
+    expect(other.querySelector('.share')).toBeNull();
   });
 
   it('puts a tile into the column it names', async () => {
