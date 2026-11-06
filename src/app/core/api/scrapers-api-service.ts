@@ -1,8 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import {
-  ScraperBreakdown,
-  ScraperBreakdownKey,
+  ScraperCountSeriesByKey,
   ScraperMetricSummary,
   ScraperSeries,
   ScraperStatus,
@@ -24,9 +23,9 @@ export class ScrapersApiService {
     return this.http.get<ScraperSeries[]>('/api/scrapers/series', { params: rangeParams(range) });
   }
 
-  getBreakdown(range: TimeRange, by: ScraperBreakdownKey) {
-    return this.http.get<ScraperBreakdown[]>('/api/scrapers/breakdown', {
-      params: { ...rangeParams(range), by },
+  getCountSeries(range: TimeRange) {
+    return this.http.get<ScraperCountSeriesByKey>('/api/scrapers/count-series', {
+      params: rangeParams(range),
     });
   }
 

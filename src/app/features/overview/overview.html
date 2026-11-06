@@ -1,6 +1,11 @@
 <h1>Overview</h1>
 
-<section class="summary" aria-label="Summary">
+<section
+  class="summary"
+  aria-label="Summary"
+  appRememberedHeight="overview-summary-height"
+  [loaded]="summary.data() !== null"
+>
   @if (summary.data(); as periods) {
     <app-summary-panels [periods]="periods" />
   } @else if (summary.error(); as error) {

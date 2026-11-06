@@ -1,4 +1,4 @@
-import { signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { RangePanel } from '@app/shared/range-panel/range-panel';
 import { RangePanelSource } from '@app/types/range-panel';
@@ -68,6 +68,27 @@ describe('RangePanel', () => {
     expect(plain.element.querySelector('.body')?.classList).not.toContain('chart');
     expect(chart.element.querySelector('.body')?.classList).toContain('chart');
     expect(chart.element.querySelector('.loading')?.getAttribute('aria-label')).toBe('Loading');
+  });
+
+  it('puts the panelActions content into the header and the rest into the body', async () => {
+    @Component({
+      imports: [RangePanel],
+      template: `
+        <app-range-panel heading="Wasted %" [source]="shown">
+          <button panelActions>Group</button>
+          <p>Chart</p>
+        </app-range-panel>
+      `,
+    })
+    class Host {
+      readonly shown = source({ data: 1 });
+    }
+    const fixture = TestBed.createComponent(Host);
+    await fixture.whenStable();
+    const element = fixture.nativeElement as HTMLElement;
+
+    expect(element.querySelector('.head .actions button')?.textContent).toBe('Group');
+    expect(element.querySelector('.body p')?.textContent).toBe('Chart');
   });
 
   it('hides the presets of data without a range', async () => {

@@ -24,8 +24,6 @@ export interface ActivityStatsDto {
   countryOutlierChannels: { id: string; name: string }[];
 }
 
-export type ScraperBreakdownKey = 'country' | 'flow';
-
 export interface ScraperMetrics {
   itemsPerSecond: number;
   requests: number;
@@ -50,15 +48,17 @@ export interface ScraperMetricSummary extends ScraperMetrics {
   previousDirectBytes: number;
 }
 
-// connections and bytes carry no country: per country they are 0 and kbPerItem and reusePercent mean nothing
-export interface ScraperBreakdown extends ScraperMetrics {
-  scraper: string;
-  group: string;
-}
-
+// Rates and gauges of the newest report; rps and concurrency from ScraperConfig, null without a row
 export interface ScraperStatus {
   scraper: string;
   lastReportAt: string;
+  itemsPerSecond: number;
+  requestsPerSecond: number;
+  // 0 = no limit
+  rps: number | null;
+  pending: number;
+  concurrency: number | null;
+  openConnections: number;
 }
 
 export interface ScraperSeriesPoint {
@@ -73,3 +73,26 @@ export interface ScraperSeries {
   scraper: string;
   points: ScraperSeriesPoint[];
 }
+
+export type ScraperCountKey = 'scraper' | 'country';
+
+// Counts of one UTC hour; summed into days before dividing them
+export interface ScraperCountPoint {
+  t: string;
+  requests: number;
+  wasted: number;
+  captcha: number;
+  http503: number;
+  items: number;
+  itemAttempts: number;
+  proxyBytes: number;
+  directBytes: number;
+}
+
+export interface ScraperCountSeries {
+  group: string;
+  points: ScraperCountPoint[];
+}
+
+// The same counts per scraper (every country) and per country (every scraper)
+export type ScraperCountSeriesByKey = Record<ScraperCountKey, ScraperCountSeries[]>;

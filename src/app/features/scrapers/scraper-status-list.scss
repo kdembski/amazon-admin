@@ -1,0 +1,50 @@
+// A narrow screen scrolls the table, not the page.
+.scroll {
+  overflow-x: auto;
+  // Softer than the border of the panel around the table.
+  --mat-table-row-item-outline-color: color-mix(
+    in srgb,
+    var(--mat-sys-outline-variant) 50%,
+    transparent
+  );
+  --mat-table-header-container-height: 40px;
+  --mat-table-row-item-container-height: 40px;
+}
+
+.name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.dot {
+  flex: none;
+  box-sizing: border-box;
+  width: 14px;
+  height: 14px;
+  border: 2px solid light-dark(#2e7d32, #81c784);
+  border-radius: 50%;
+  background: light-dark(#2e7d32, #81c784);
+
+  // Hollow, so the state does not depend on the colour alone.
+  .stopped & {
+    border-color: var(--mat-sys-error);
+    background: none;
+  }
+}
+
+td {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+mat-progress-bar {
+  min-width: 96px;
+  margin-top: 4px;
+}
+
+.empty-row td {
+  padding: 16px;
+  color: var(--mat-sys-on-surface-variant);
+}

@@ -1,9 +1,20 @@
 import {
+  attemptsPerItem,
+  requestPercent,
+  directMegabytes,
+  proxyMegabytes,
+  toCountSeries,
   toScraperSeries,
   toScraperStatuses,
   toScraperTiles,
 } from '@app/features/scrapers/scraper-charts';
-import { ScraperMetricSummary, ScraperSeries } from '@app/types/api-dtos';
+import {
+  ScraperCountPoint,
+  ScraperCountSeries,
+  ScraperMetricSummary,
+  ScraperSeries,
+  ScraperStatus,
+} from '@app/types/api-dtos';
 
 const range = {
   from: new Date('2026-10-26T10:00:00.000Z'),
@@ -47,6 +58,62 @@ describe('toScraperSeries', () => {
   });
 });
 
+describe('toCountSeries', () => {
+  const point = (t: string, requests: number, wasted: number): ScraperCountPoint => ({
+    t,
+    requests,
+    wasted,
+    captcha: 0,
+    http503: 0,
+    items: requests / 2,
+    itemAttempts: requests,
+    proxyBytes: requests * 1_048_576,
+    directBytes: 0,
+  });
+  const countries: ScraperCountSeries[] = [
+    { group: 'de', points: [point(at(10), 100, 10), point(at(12), 300, 120)] },
+    { group: 'pl', points: [] },
+  ];
+  const wasted = { '': requestPercent((p) => p.wasted) };
+
+  it('returns one series per country with every hour of the range', () => {
+    const result = toCountSeries(countries, range, 'hour', wasted);
+
+    expect(result.map((s) => s.label)).toEqual(['de', 'pl']);
+    expect(result[0].points).toEqual([
+      { t: new Date(at(10)), value: 10 },
+      { t: new Date(at(11)), value: 0 },
+      { t: new Date(at(12)), value: 40 },
+    ]);
+  });
+
+  it('sums the counts of a day before dividing them', () => {
+    const [de] = toCountSeries(countries, range, 'day', wasted);
+
+    expect(de.points).toEqual([{ t: new Date(2026, 9, 26), value: 32.5 }]);
+  });
+
+  it('labels every named line with the country and its name', () => {
+    const result = toCountSeries(countries, range, 'day', {
+      proxy: proxyMegabytes,
+      direct: directMegabytes,
+    });
+
+    expect(result.map((s) => [s.label, s.points[0].value])).toEqual([
+      ['de proxy', 400],
+      ['de direct', 0],
+      ['pl proxy', 0],
+      ['pl direct', 0],
+    ]);
+  });
+
+  it('shows 0 attempts/item for an hour without items', () => {
+    const [de] = toCountSeries(countries, range, 'hour', { '': attemptsPerItem });
+
+    expect(de.points.map((p) => p.value)).toEqual([2, 0, 2]);
+  });
+});
+
 describe('toScraperTiles', () => {
   const summary = (scraper: string, requests: number, previousRequests: number) =>
     ({
@@ -66,32 +133,35 @@ describe('toScraperTiles', () => {
   });
 
   it('sums the requests of all scrapers without a breakdown', () => {
-    expect(tiles[0]).toEqual({ label: 'Requests', value: 400, change: 100, details: [] });
+    expect(tiles[0]).toEqual({
+      label: 'Requests',
+      value: 400,
+      change: 100,
+      digits: 0,
+      column: 0,
+      details: [],
+    });
   });
 
-  it('divides the requests of each scraper by the seconds of the range', () => {
-    expect(tiles[2]).toEqual({
+  it('divides the requests by the seconds of the range, without a breakdown', () => {
+    expect(tiles[1]).toEqual({
       label: 'Requests/s',
       value: 4,
       change: 100,
       digits: 1,
-      details: [
-        { label: 'amazon-pdp', value: 3, change: 50 },
-        { label: 'amazon-plp', value: 1, change: null },
-      ],
+      column: 0,
+      details: [],
     });
   });
 
-  it('sums items/s with the change derived from the diff', () => {
-    expect(tiles[1]).toEqual({
+  it('sums items/s with the change derived from the diff, without a breakdown', () => {
+    expect(tiles[2]).toEqual({
       label: 'Items/s',
       value: 4,
       change: 100,
       digits: 2,
-      details: [
-        { label: 'amazon-pdp', value: 3, change: 50 },
-        { label: 'amazon-plp', value: 1, change: null },
-      ],
+      column: 0,
+      details: [],
     });
   });
 
@@ -101,6 +171,7 @@ describe('toScraperTiles', () => {
       value: 600,
       change: 50,
       digits: 1,
+      column: 1,
       details: [
         { label: 'Proxy', value: 400, change: 100 },
         { label: 'Direct', value: 200, change: 0 },
@@ -111,13 +182,26 @@ describe('toScraperTiles', () => {
 
 describe('toScraperStatuses', () => {
   const now = new Date('2026-10-26T12:00:00.000Z');
+  const live = {
+    itemsPerSecond: 2.5,
+    requestsPerSecond: 9.8,
+    rps: 10,
+    pending: 40,
+    concurrency: 50,
+    openConnections: 25,
+  };
+  const status = (scraper: string, lastReportAt: string): ScraperStatus => ({
+    scraper,
+    lastReportAt,
+    ...live,
+  });
 
-  it('marks a scraper silent for more than 5 minutes as stopped', () => {
+  it('marks a scraper silent for more than 5 minutes as stopped and keeps its rates', () => {
     expect(
       toScraperStatuses(
         [
-          { scraper: 'amazon-pdp', lastReportAt: '2026-10-26T11:58:30.000Z' },
-          { scraper: 'amazon-plp', lastReportAt: '2026-10-26T11:40:00.000Z' },
+          status('amazon-pdp', '2026-10-26T11:58:30.000Z'),
+          status('amazon-plp', '2026-10-26T11:40:00.000Z'),
         ],
         now,
       ),
@@ -127,22 +211,21 @@ describe('toScraperStatuses', () => {
         lastReportAt: new Date('2026-10-26T11:58:30.000Z'),
         minutesAgo: 1,
         stopped: false,
+        ...live,
       },
       {
         scraper: 'amazon-plp',
         lastReportAt: new Date('2026-10-26T11:40:00.000Z'),
         minutesAgo: 20,
         stopped: true,
+        ...live,
       },
     ]);
   });
 
   it('shows 0 minutes for a report stamped after the load', () => {
-    const [status] = toScraperStatuses(
-      [{ scraper: 'amazon-pdp', lastReportAt: '2026-10-26T12:00:05.000Z' }],
-      now,
-    );
+    const [row] = toScraperStatuses([status('amazon-pdp', '2026-10-26T12:00:05.000Z')], now);
 
-    expect(status).toMatchObject({ minutesAgo: 0, stopped: false });
+    expect(row).toMatchObject({ minutesAgo: 0, stopped: false });
   });
 });

@@ -18,14 +18,6 @@ export const formatNumber = (value: number | null, digits = 2) => {
   return value === null ? '—' : formatter(digits).format(value);
 };
 
-export const formatSigned = (value: number, digits = 2) => {
-  return `${value > 0 ? '+' : ''}${formatNumber(value, digits)}`;
-};
-
-export const formatMegabytes = (bytes: number) => {
-  return formatNumber(bytes / 1_048_576, 1);
-};
-
 const compactFormatter = (digits: number) => {
   return new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: digits });
 };

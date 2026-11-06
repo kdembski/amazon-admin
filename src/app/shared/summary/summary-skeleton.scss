@@ -36,9 +36,11 @@
   animation: pulse 1.5s ease-in-out infinite;
 }
 
+// Centered in the 20px line of the real heading, so the tiles start at the same height.
 .heading {
   width: 96px;
   height: 14px;
+  margin: 3px 0;
 }
 
 .label {

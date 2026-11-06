@@ -65,6 +65,20 @@ describe('SummaryPanels', () => {
     expect(element.querySelector('.detail .value')?.textContent).toBe('0,25');
   });
 
+  it('puts a tile into the column it names', async () => {
+    const tile = (label: string, column: 0 | 1) => {
+      return { label, value: 1, change: null, column, details: [] };
+    };
+    const element = await render([
+      { name: 'Last hour', tiles: [tile('a', 0), tile('b', 0), tile('c', 0), tile('d', 1)] },
+    ]);
+
+    const columns = [...element.querySelectorAll('.column')].map((column) =>
+      [...column.querySelectorAll('.tile .label')].map((label) => label.textContent),
+    );
+    expect(columns).toEqual([['a', 'b', 'c'], ['d']]);
+  });
+
   it('puts the tiles alternately into two columns', async () => {
     const detail = (label: string) => ({ label, value: 1, change: null });
     const element = await render([

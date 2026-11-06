@@ -1,5 +1,7 @@
 :host {
   display: grid;
+  // Without the 0 minimum a wide table would stretch the page instead of scrolling.
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.5rem;
 }
 
@@ -8,12 +10,13 @@ h1 {
   font-size: 1.5rem;
 }
 
-// The height of the loaded tiles on a wide screen, so the page does not jump.
+// The default height of the first load: the tiles on a wide screen. Later loads take theirs from
+// RememberedHeight.
 .summary {
-  --summary-height: 266px;
+  --summary-height: 250px;
 
   display: grid;
-  align-content: center;
+  align-content: start;
   min-height: var(--summary-height);
 }
 
@@ -22,22 +25,4 @@ h1 {
   border-radius: var(--mat-sys-corner-medium);
   background: var(--mat-sys-error-container);
   color: var(--mat-sys-on-error-container);
-}
-
-.empty-row td {
-  padding: 1rem;
-  color: var(--mat-sys-on-surface-variant);
-}
-
-.status {
-  font-size: 13px;
-  font-weight: 500;
-
-  &.ok {
-    color: light-dark(#2e7d32, #81c784);
-  }
-
-  &.stopped {
-    color: var(--mat-sys-error);
-  }
 }

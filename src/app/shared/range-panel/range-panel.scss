@@ -12,10 +12,12 @@
   }
 }
 
-.range {
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
   margin-left: auto;
-  --mat-button-toggle-height: 28px;
-  --mat-button-toggle-label-text-size: 12px;
 }
 
 .body {

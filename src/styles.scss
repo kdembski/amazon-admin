@@ -13,6 +13,17 @@ html {
       density: 0,
     )
   );
+  // A 1px outline on the full pill shape looks jagged at this height.
+  @include mat.button-toggle-overrides(
+    (
+      height: 28px,
+      shape: var(--mat-sys-corner-small),
+      label-text-size: 12px,
+      divider-color: var(--mat-sys-outline-variant),
+      selected-state-background-color: var(--mat-sys-secondary-container),
+      selected-state-text-color: var(--mat-sys-on-secondary-container),
+    )
+  );
 }
 
 body {
