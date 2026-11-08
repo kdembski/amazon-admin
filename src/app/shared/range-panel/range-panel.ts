@@ -2,12 +2,13 @@ import { DatePipe } from '@angular/common';
 import { Component, input } from '@angular/core';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { RememberedHeight } from '@app/shared/summary/remembered-height';
 import { RANGE_PRESETS } from '@app/shared/time-range/time-range';
 import { RangePanelSource } from '@app/types/range-panel';
 
 @Component({
   selector: 'app-range-panel',
-  imports: [DatePipe, MatButtonToggleModule, MatProgressSpinner],
+  imports: [DatePipe, MatButtonToggleModule, MatProgressSpinner, RememberedHeight],
   templateUrl: './range-panel.html',
   styleUrl: './range-panel.scss',
 })

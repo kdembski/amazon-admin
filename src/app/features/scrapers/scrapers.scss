@@ -13,11 +13,11 @@ h1 {
 // The default height of the first load: the tiles on a wide screen. Later loads take theirs from
 // RememberedHeight.
 .summary {
-  --summary-height: 250px;
+  --remembered-height: 250px;
 
   display: grid;
   align-content: start;
-  min-height: var(--summary-height);
+  min-height: var(--remembered-height);
 }
 
 .error {

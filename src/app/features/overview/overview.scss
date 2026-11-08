@@ -10,11 +10,11 @@ h1 {
 
 // The height of the loaded tiles on a wide screen, so the page does not jump.
 .summary {
-  --summary-height: 325px;
+  --remembered-height: 325px;
 
   display: grid;
   align-content: center;
-  min-height: var(--summary-height);
+  min-height: var(--remembered-height);
 }
 
 .error {

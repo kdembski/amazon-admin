@@ -9,7 +9,7 @@
   display: grid;
   grid-template-rows: auto 1fr;
   gap: 8px;
-  min-height: var(--summary-height, 0);
+  min-height: var(--remembered-height, 0);
 }
 
 .tiles {

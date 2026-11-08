@@ -22,11 +22,12 @@ const save = (key: string, height: number) => {
   }
 };
 
-// The height depends on the data, so the skeleton takes it from the previous load. Before the
-// first load in this browser, or at a new window width, the default of --summary-height applies.
+// The height depends on the data, so the loading state takes it from the previous load. Before
+// the first load in this browser, or at a new window width, the default of --remembered-height
+// applies.
 @Directive({
   selector: '[appRememberedHeight]',
-  host: { '[style.--summary-height]': 'height()' },
+  host: { '[style.--remembered-height]': 'height()' },
 })
 export class RememberedHeight {
   readonly key = input.required<string>({ alias: 'appRememberedHeight' });

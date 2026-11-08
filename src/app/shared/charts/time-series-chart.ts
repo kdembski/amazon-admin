@@ -104,6 +104,7 @@ export class TimeSeriesChart {
         borderColor: color,
         backgroundColor: this.fill() ? `${color}33` : color,
         fill: this.fill(),
+        borderWidth: 1.5,
         pointRadius: this.pointLabels() ? 3 : 0,
         tension: 0.2,
       };

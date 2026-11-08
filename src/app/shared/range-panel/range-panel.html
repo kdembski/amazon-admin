@@ -20,7 +20,12 @@
       }
     </div>
   </header>
-  <div class="body" [class.chart]="chart()">
+  <div
+    class="body"
+    [class.chart]="chart()"
+    [appRememberedHeight]="'panel-height:' + heading()"
+    [loaded]="source().data() !== null"
+  >
     <ng-content />
     @if (source().data() === null) {
       @if (source().error(); as error) {
