@@ -1,11 +1,11 @@
 :host {
   display: grid;
-  gap: 1.5rem;
+  gap: 24px;
 }
 
 h1 {
   margin: 0 0 16px;
-  font-size: 1.5rem;
+  font-size: 24px;
 }
 
 // The height of the loaded tiles on a wide screen, so the page does not jump.
@@ -18,7 +18,7 @@ h1 {
 }
 
 .error {
-  padding: 0.75rem 1rem;
+  padding: 12px 16px;
   border-radius: var(--mat-sys-corner-medium);
   background: var(--mat-sys-error-container);
   color: var(--mat-sys-on-error-container);

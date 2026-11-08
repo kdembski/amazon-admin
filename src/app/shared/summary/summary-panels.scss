@@ -1,12 +1,12 @@
 :host {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(384px, 1fr));
-  gap: 1.5rem;
+  gap: 24px;
 }
 
 .panel h2 {
-  margin: 0 0 0.5rem;
-  font-size: 0.875rem;
+  margin: 0 0 8px;
+  font-size: 14px;
   font-weight: 500;
 }
 

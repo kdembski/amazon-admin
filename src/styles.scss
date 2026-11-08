@@ -3,8 +3,8 @@
 html {
   height: 100%;
   color-scheme: light dark;
-  // Above the 50% of the table rows, so they stay softer than the panel around them.
   --app-border: color-mix(in srgb, var(--mat-sys-outline-variant) 60%, transparent);
+
   @include mat.theme(
     (
       color: (
@@ -15,7 +15,7 @@ html {
       density: 0,
     )
   );
-  // A 1px outline on the full pill shape looks jagged at this height.
+
   @include mat.button-toggle-overrides(
     (
       height: 28px,

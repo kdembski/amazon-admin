@@ -1,108 +1,66 @@
-You are an expert in TypeScript, Angular, and scalable web application development. You write functional, maintainable, performant, and accessible code following Angular and TypeScript best practices.
+# CLAUDE.md
 
-## TypeScript Best Practices
+Angular SPA for amazon-server: statistics now, server and scraper configuration later. Talks to the server only through
+`/api` (dev: `proxy.conf.mjs`, prod: nginx), which adds `Authorization: Bearer <API_TOKEN>`.
 
-- Use strict type checking
-- Prefer type inference when the type is obvious
-- Avoid the `any` type; use `unknown` when type is uncertain
-
-## Angular Best Practices
-
-- Always use standalone components over NgModules
-- Must NOT set `standalone: true` inside Angular decorators. It's the default in Angular v20+.
-- Do NOT set `changeDetection: ChangeDetectionStrategy.OnPush` explicitly. `OnPush` is the default in Angular v22+.
-- Use signals for state management
-- Implement lazy loading for feature routes
-- Do NOT use the `@HostBinding` and `@HostListener` decorators. Put host bindings inside the `host` object of the `@Component` or `@Directive` decorator instead
-- Use `NgOptimizedImage` for all static images.
-  - `NgOptimizedImage` does not work for inline base64 images.
-
-## Accessibility Requirements
-
-- It MUST pass all AXE checks.
-- It MUST follow all WCAG AA minimums, including focus management, color contrast, and ARIA attributes.
-
-## Components
-
-- Keep components small and focused on a single responsibility
-- Use `input()` and `output()` functions instead of decorators
-- Use `model()` for two-way bound properties with `[(prop)]` syntax instead of pairing `input()` with `output()`
-- Use `computed()` for derived state
-- Use `linkedSignal()` for state derived from multiple reactive sources that must stay synchronized
-- Prefer inline templates for small components
-- Prefer Signal Forms (`@angular/forms/signals`) for new forms. They are stable in Angular v22+ and provide signal-based state, type-safe field access, and schema-based validation
-- When not using Signal Forms, prefer Reactive forms instead of Template-driven ones
-- Do NOT use `ngClass`, use `class` bindings instead
-- Do NOT use `ngStyle`, use `style` bindings instead
-- Do NOT import `CommonModule`, import only the directives and pipes the template uses, such as `AsyncPipe` or `DatePipe`
-- When using external templates/styles, use paths relative to the component TS file.
-
-## State Management
-
-- Use signals for local component state
-- Use `computed()` for derived state
-- Keep state transformations pure and predictable
-- Do NOT use `mutate` on signals, use `update` or `set` instead
-
-## Templates
-
-- Keep templates simple and avoid complex logic
-- Use native control flow (`@if`, `@for`, `@switch`) instead of `*ngIf`, `*ngFor`, `*ngSwitch`
-- Use the async pipe to handle observables
-- Do not assume globals like (`new Date()`) are available.
-
-## Services
-
-- Design services around a single responsibility
-- Use the `providedIn: 'root'` option for singleton services
-- Prefer the `@Service` decorator over `@Injectable({providedIn: 'root'})` for new singleton services (Angular v22+)
-- Use the `inject()` function instead of constructor injection
-
-## Project
-
-Angular SPA for amazon-server: statistics now, server and scraper configuration later. Talks to the server only
-through `/api` (dev: `proxy.conf.mjs`, prod: nginx), which adds `Authorization: Bearer <API_TOKEN>`.
-
-### Commands
+## Commands
 
 ```bash
-npm start                        # ng serve; /api proxied to API_URL with API_TOKEN, both read from .env (gitignored)
-npx ng test --watch=false        # Vitest
-npx ng lint
-npx prettier --write src tests  # format before committing
-docker compose up -d --build     # production: nginx on 127.0.0.1:8081, env from .env (see README)
+npm start                       # ng serve; API_URL and API_TOKEN from .env (gitignored)
 npx ng build
+npx ng lint
+npx ng test --watch=false       # Vitest
+npx prettier --write src tests  # before every commit
+docker compose up -d --build    # nginx on 127.0.0.1:8081, env from .env
 ```
 
-### Layout
+Tests: every component, service, store and helper gets a spec at the mirrored path (`src/app/core/layout/shell.ts` →
+`tests/app/core/layout/shell.spec.ts`). Import tested code via `@app/*`, never relative paths into `src/`.
 
-- `src/app/core/`: app-wide pieces (`api/` clients and DTOs, `layout/` shell).
-- `src/app/shared/`: reusable components and pure helpers (time range, polling, charts, stat tile).
-- `src/app/features/<name>/`: one lazy route per view.
-- `src/app/types/`: every exported type and interface of the app (API DTOs in `api-dtos.ts`, others in one file per
-  topic, e.g. `poll-state.ts`); code files hold no type declarations.
-- `tests/`: unit tests, mirroring `src/` (`src/app/core/layout/shell.ts` → `tests/app/core/layout/shell.spec.ts`);
-  import tested code through the `@app/*` alias (`src/app/*`), never through relative paths into `src/`.
+## Rules
 
-### Rules
-
-- Before every commit, stop and wait for the user to review the changes; commit only after their approval.
-- Commit messages: short English sentence starting with a capitalised past-tense verb (`Added ...`, `Fixed ...`).
-  No `Co-Authored-By` or other attribution.
-- Separate the sections of a function body (declarations, guard clauses, the main step, the final `return`) with one
-  blank line.
-- Write standalone functions as `const` arrow functions (`export const poll = <T>(...) => { ... }`), never with the
-  `function` keyword; class members stay methods.
-- UI text, code, identifiers and error messages in English.
+- Before every commit, wait for the user's review; commit only after approval.
+- Commit messages: short English sentence starting with a capitalised past-tense verb (`Added ...`). No attribution.
+- UI text, code and error messages in English.
+- In CLAUDE.md and code comments write only what to do, never why.
 - Never put the API token in the bundle, `environment` files or browser storage.
-- State: NgRx SignalStore (`@ngrx/signals`). Shared state in `providedIn: 'root'` stores, view state in a store provided
-  by the view component; components only read store signals and call store methods. Periodic loading goes through
-  `withPolling(() => (range) => load)` from `shared/polling`.
-- HTTP clients: one stateless `<Name>ApiService` per server area in `core/api/` (`stats-api-service.ts`), one method per endpoint.
-- Copy API DTOs from amazon-server into `types/api-dtos.ts` with the same field names.
-- Query `from`/`to` as `Date.toISOString()`; ranges at most 30 days (the server limit and its log retention).
-- Every range-dependent panel has its own `RangePanel` with presets 1d, 7d, 30d (default 1d), backed by its own store;
-  no global range.
-- Poll every 60 s, paused while the tab is hidden.
-- Charts: hours for ranges up to 48 h, days in the browser time zone above.
-- Every new component, service, store and helper gets a `.spec.ts` under `tests/` at the path mirroring `src/`.
+- Pass all AXE checks and WCAG AA (focus management, contrast, ARIA).
+
+## Architecture
+
+- `src/app/core/`: app-wide pieces (`api/`, `layout/`). `shared/`: reusable components and pure helpers.
+  `features/<name>/`: one lazy route per view.
+- `src/app/types/`: every exported type; API DTOs in `api-dtos.ts`, copied from amazon-server with the same field
+  names; others one file per topic (`poll-state.ts`). Code files declare no types.
+- HTTP: one stateless `<Name>ApiService` per server area in `core/api/`, one method per endpoint.
+- State: NgRx SignalStore. Shared state in root stores, view state in a store provided by the view component;
+  components only read store signals and call store methods.
+- Periodic loading via `withPolling(() => (range) => load)` from `shared/polling`: every 60 s, paused while the tab is
+  hidden.
+- Each range-dependent panel has its own `RangePanel` (presets 1d, 7d, 30d, default 1d) and store; no global range.
+  `from`/`to` as `toISOString()`, max 30 days.
+- Charts: hours up to 48 h, above that days in the browser time zone.
+
+## Conventions
+
+- Strict types, no `any` (use `unknown`); infer obvious types.
+- Styles in `px`, never `rem` or `em`.
+- Standalone functions as `const` arrows, never `function`; class members stay methods.
+- A blank line between function body sections (declarations, guards, main step, `return`).
+- No `standalone: true`, no explicit `OnPush` (defaults).
+- `input()`, `output()`, `model()` for two-way binding, `computed()` for derived state, `linkedSignal()` for state
+  synced from several sources. No `@HostBinding`/`@HostListener`: use `host`.
+- Signals: `set`/`update`, never `mutate`. `effect()` only for side effects outside signals (DOM, storage, logging),
+  never to copy state between signals.
+- Observables: `toSignal()` or async pipe; a manual `subscribe()` needs `takeUntilDestroyed()`.
+- File names kebab-case without type suffix (`shell.ts`, `stats-api-service.ts`), one component, service or store per
+  file.
+- `readonly` on inputs, outputs, queries and injected fields; `protected` on members used only by the template.
+- Event handlers named after the action (`save()`), not the event (`onClick()`).
+- Templates: `@if`/`@for`/`@switch`, `@for` tracks a stable id (`$index` only for static lists), `class`/`style`
+  bindings (no `ngClass`/`ngStyle`), async pipe, no globals like `new Date()`. Logic beyond simple expressions in
+  `computed()` or pipes. Import only the used directives and pipes, never `CommonModule`.
+- Inline templates for small components; external template/style paths relative to the TS file.
+- `NgOptimizedImage` for static images (not base64).
+- Forms: Signal Forms (`@angular/forms/signals`), otherwise Reactive.
+- `inject()`, not constructor injection; new singletons via `@Service`.
