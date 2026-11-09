@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { RememberedHeight } from '@app/shared/summary/remembered-height';
+import { RememberedHeight } from '@app/shared/remembered-height/remembered-height';
 
 @Component({
   imports: [RememberedHeight],

@@ -35,10 +35,14 @@ Tests: every component, service, store and helper gets a spec at the mirrored pa
 - HTTP: one stateless `<Name>ApiService` per server area in `core/api/`, one method per endpoint.
 - State: NgRx SignalStore. Shared state in root stores, view state in a store provided by the view component;
   components only read store signals and call store methods.
+- Store loads via `apiLoad(Service, (api, range) => api.method(range))` from `core/api/api-load`.
 - Periodic loading via `withPolling(() => (range) => load)` from `shared/polling`: every 60 s, paused while the tab is
   hidden.
 - Each range-dependent panel has its own `RangePanel` (presets 1d, 7d, 30d, default 1d) and store; no global range.
   `from`/`to` as `toISOString()`, max 30 days.
+- Time units (`MINUTE`, `HOUR`, `DAY`, `floorToHour`) from `shared/time-range`, sums via `sumBy`/`sumFields` from
+  `shared/math/sum`.
+- Pages set `host: { class: 'page' }`; error messages use the global `.error` class.
 - Charts: hours up to 48 h, above that days in the browser time zone.
 
 ## Conventions

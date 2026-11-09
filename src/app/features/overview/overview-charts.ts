@@ -1,21 +1,8 @@
 import { toChartPoints } from '@app/shared/charts/to-chart-points';
-import { ActivityEventType, ActivityStatsDto } from '@app/types/api-dtos';
+import { ActivityStatsDto, TimePoint } from '@app/types/api-dtos';
 import { ChartSeries } from '@app/types/chart';
 import { Granularity, TimeRange } from '@app/types/time-range';
-
-const pointsOf = (dto: ActivityStatsDto, type: ActivityEventType) => {
-  return dto.series.find((series) => series.type === type)?.points ?? [];
-};
-
-export const channelName = (dto: ActivityStatsDto, channel: string | null) => {
-  return dto.countryOutlierChannels.find(({ id }) => id === channel)?.name ?? `#${channel}`;
-};
-
-export const outliersByChannel = (dto: ActivityStatsDto) => {
-  return dto.series
-    .filter((series) => series.type === 'country_outlier_sent')
-    .sort((a, b) => (a.channel ?? '').localeCompare(b.channel ?? '', undefined, { numeric: true }));
-};
+import { channelName, outliersByChannel, pointsOf, seriesOf } from './activity-series';
 
 export const toScrapedSeries = (
   dto: ActivityStatsDto,
@@ -32,13 +19,13 @@ export const toAnomalySeries = (
   range: TimeRange,
   unit: Granularity,
 ): ChartSeries[] => {
-  const outliers = outliersByChannel(dto).map((series) => ({
-    label: `Country outlier ${channelName(dto, series.channel)}`,
-    points: toChartPoints(series.points, range, unit),
-  }));
-  const drops = dto.series
-    .filter((series) => series.type === 'price_drop_sent')
-    .map((series) => ({ label: 'Price drop', points: toChartPoints(series.points, range, unit) }));
+  const line = (label: string, points: TimePoint[]) => {
+    return { label, points: toChartPoints(points, range, unit) };
+  };
+  const outliers = outliersByChannel(dto).map((series) => {
+    return line(`Country outlier ${channelName(dto, series.channel)}`, series.points);
+  });
+  const drops = seriesOf(dto, 'price_drop_sent').map((series) => line('Price drop', series.points));
 
   return [...outliers, ...drops];
 };

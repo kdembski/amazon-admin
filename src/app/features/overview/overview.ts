@@ -1,18 +1,18 @@
 import { Component, inject } from '@angular/core';
 import { TimeSeriesChart } from '@app/shared/charts/time-series-chart';
 import { RangePanel } from '@app/shared/range-panel/range-panel';
-import { RememberedHeight } from '@app/shared/summary/remembered-height';
-import { SummaryPanels } from '@app/shared/summary/summary-panels';
-import { SummarySkeleton } from '@app/shared/summary/summary-skeleton';
-import { AdChangeStore, AnomalyStore, ScrapedStore } from './overview-store';
+import { SummarySection } from '@app/shared/summary/summary-section';
+import { AdChangeStore } from './ad-change-store';
+import { AnomalyStore } from './anomaly-store';
+import { ScrapedStore } from './scraped-store';
 import { SummaryStore } from './summary-store';
 
 @Component({
   selector: 'app-overview',
-  imports: [RangePanel, RememberedHeight, SummaryPanels, SummarySkeleton, TimeSeriesChart],
+  imports: [RangePanel, SummarySection, TimeSeriesChart],
   providers: [ScrapedStore, AdChangeStore, AnomalyStore, SummaryStore],
+  host: { class: 'page' },
   templateUrl: './overview.html',
-  styleUrl: './overview.scss',
 })
 export class Overview {
   protected readonly scraped = inject(ScrapedStore);

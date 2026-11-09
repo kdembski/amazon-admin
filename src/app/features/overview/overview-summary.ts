@@ -1,9 +1,8 @@
+import { sumBy } from '@app/shared/math/sum';
 import { stat } from '@app/shared/summary/summary';
-import { ActivityEventType, ActivityStatsDto, TimePoint } from '@app/types/api-dtos';
+import { ActivityEventType, ActivityStatsDto } from '@app/types/api-dtos';
 import { SummaryStat, SummaryTile } from '@app/types/summary';
-import { channelName, outliersByChannel } from './overview-charts';
-
-const sum = (points: TimePoint[]) => points.reduce((total, point) => total + point.value, 0);
+import { channelName, outliersByChannel } from './activity-series';
 
 const tile = (
   dto: ActivityStatsDto,
@@ -32,7 +31,11 @@ const outliersTile = (dto: ActivityStatsDto) => {
 
   const sent = (channel: string) => {
     const points = outliers.find((series) => series.channel === channel)?.points ?? [];
-    return stat(channelName(dto, channel), sum(points), null);
+    return stat(
+      channelName(dto, channel),
+      sumBy(points, (point) => point.value),
+      null,
+    );
   };
 
   return tile(dto, 'Country outliers', 'country_outlier_sent', [...channels].map(sent));

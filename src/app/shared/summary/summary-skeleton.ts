@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 
-// The shape of SummaryPanels while the summary loads; its height comes from --remembered-height.
 @Component({
   selector: 'app-summary-skeleton',
   host: { role: 'status', 'aria-label': 'Loading' },

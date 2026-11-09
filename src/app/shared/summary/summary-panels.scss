@@ -79,7 +79,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-// A fixed width lines the shares of all rows up.
 .share {
   display: inline-block;
   min-width: 32px;
@@ -91,7 +90,6 @@
 
 .change {
   font-size: 12px;
-  // A taller line, aligned by baseline with the value, would make the headline grow with the badge.
   line-height: 1;
 
   &.up {

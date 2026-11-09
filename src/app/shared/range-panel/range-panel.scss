@@ -21,13 +21,10 @@
 }
 
 .body {
-  // While loading, the height of the previous load, so a table panel does not collapse.
   display: grid;
-  // Without the 0 minimum a wide table would stretch the panel instead of scrolling.
   grid-template-columns: minmax(0, 1fr);
   align-content: center;
   min-height: var(--remembered-height, 0);
-  // offsetHeight, the remembered value, counts the padding and the border.
   box-sizing: border-box;
   padding: 16px;
   border: 1px solid var(--app-border);
@@ -47,19 +44,10 @@
 .chart {
   display: grid;
   align-content: center;
-  // The height of TimeSeriesChart, without the padding.
   box-sizing: content-box;
   min-height: 288px;
 }
 
 .loading {
   margin: 0 auto;
-}
-
-.error {
-  margin: 0;
-  padding: 12px 16px;
-  border-radius: var(--mat-sys-corner-medium);
-  background: var(--mat-sys-error-container);
-  color: var(--mat-sys-on-error-container);
 }

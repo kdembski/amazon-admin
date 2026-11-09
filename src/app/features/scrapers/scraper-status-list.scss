@@ -1,7 +1,5 @@
-// A narrow screen scrolls the table, not the page.
 .scroll {
   overflow-x: auto;
-  // Softer than the border of the panel around the table.
   --mat-table-row-item-outline-color: color-mix(
     in srgb,
     var(--mat-sys-outline-variant) 50%,
@@ -48,7 +46,6 @@ mat-progress-bar {
   max-width: 120px;
 }
 
-// A fixed width, so the bars of all rows end at the same place.
 .count {
   flex: none;
   min-width: 72px;

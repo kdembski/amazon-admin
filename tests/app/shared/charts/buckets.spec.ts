@@ -1,10 +1,5 @@
-import {
-  combineScraperPoints,
-  fillHours,
-  sumPoints,
-  toDailyBuckets,
-} from '@app/shared/charts/buckets';
-import { ScraperSeriesPoint, TimePoint } from '@app/types/api-dtos';
+import { fillHours, sumPoints, toBuckets, toDailyBuckets } from '@app/shared/charts/buckets';
+import { TimePoint } from '@app/types/api-dtos';
 
 const zero = (t: string): TimePoint => ({ t, value: 0 });
 const point = (t: Date, value: number): TimePoint => ({ t: t.toISOString(), value });
@@ -64,35 +59,17 @@ describe('toDailyBuckets', () => {
   });
 });
 
-describe('combineScraperPoints', () => {
-  const day = new Date(2026, 9, 26);
-  const scraper = (
-    itemsPerSecond: number,
-    percent: number,
-    requests: number,
-  ): ScraperSeriesPoint => ({
-    t: day.toISOString(),
-    itemsPerSecond,
-    wastedPercent: percent,
-    captchaPercent: percent / 2,
-    requests,
+describe('toBuckets', () => {
+  const range = { from: new Date(2026, 9, 26, 10), to: new Date(2026, 9, 26, 12) };
+  const points = [point(new Date(2026, 9, 26, 11), 4)];
+
+  it('keeps the filled hours for the hour unit', () => {
+    expect(toBuckets(points, range, 'hour', zero, sumPoints).map((p) => p.value)).toEqual([0, 4]);
   });
 
-  it('averages items/s, weights the percents by requests and sums requests', () => {
-    expect(combineScraperPoints(day, [scraper(1, 10, 100), scraper(3, 40, 300)])).toEqual({
-      t: day.toISOString(),
-      itemsPerSecond: 2,
-      wastedPercent: 32.5,
-      captchaPercent: 16.25,
-      requests: 400,
-    });
-  });
-
-  it('gives 0 % without requests', () => {
-    expect(combineScraperPoints(day, [scraper(0, 0, 0), scraper(0, 0, 0)])).toMatchObject({
-      wastedPercent: 0,
-      captchaPercent: 0,
-      requests: 0,
-    });
+  it('combines the filled hours into days for the day unit', () => {
+    expect(toBuckets(points, range, 'day', zero, sumPoints)).toEqual([
+      { t: new Date(2026, 9, 26).toISOString(), value: 4 },
+    ]);
   });
 });

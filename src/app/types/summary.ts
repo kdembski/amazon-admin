@@ -1,3 +1,5 @@
+import { Signal } from '@angular/core';
+
 export interface SummaryStat {
   label: string;
   value: number;
@@ -19,4 +21,9 @@ export interface SummaryTile extends SummaryStat {
 export interface SummaryPeriod {
   name: string;
   tiles: SummaryTile[];
+}
+
+export interface SummarySource {
+  data: Signal<SummaryPeriod[] | null>;
+  error: Signal<string | null>;
 }
