@@ -2,7 +2,6 @@ import {
   toAdChangeSeries,
   toAnomalySeries,
   toScrapedSeries,
-  toSummaryTiles,
 } from '@app/features/overview/overview-charts';
 import { ActivityStatsDto } from '@app/types/api-dtos';
 
@@ -105,59 +104,5 @@ describe('toAdChangeSeries', () => {
       ['New ads', [0, 6, 0]],
       ['Deleted ads', [0, 0, 0]],
     ]);
-  });
-});
-
-describe('toSummaryTiles', () => {
-  it('returns the totals with their change, the comparable ads and the outliers per channel', () => {
-    expect(toSummaryTiles(activity)).toEqual([
-      {
-        label: 'Scraped ads',
-        value: 40,
-        change: 100,
-        details: [{ label: '3+ prices', value: 10, change: 100 }],
-      },
-      {
-        label: 'Country outliers',
-        value: 3,
-        change: null,
-        details: [
-          { label: 'outliers-de', value: 1, change: null },
-          { label: '#3', value: 2, change: null },
-        ],
-      },
-      {
-        label: 'Ad balance',
-        value: 4,
-        change: null,
-        details: [
-          { label: 'New ads', value: 6, change: 100 },
-          { label: 'Deleted ads', value: 2, change: null },
-        ],
-      },
-      { label: 'Price drops', value: 4, change: -50, details: [] },
-    ]);
-  });
-
-  it('lists the channels of the settings first, in their order, with 0 without outliers', () => {
-    const [, outliers] = toSummaryTiles({
-      ...activity,
-      countryOutlierChannels: [
-        { id: '5', name: 'outliers-pl' },
-        { id: '3', name: 'outliers-fr' },
-      ],
-    });
-
-    expect(outliers.details.map((detail) => [detail.label, detail.value])).toEqual([
-      ['outliers-pl', 0],
-      ['outliers-fr', 2],
-      ['#1', 1],
-    ]);
-  });
-
-  it('leaves out the comparable ads without the minPrices setting', () => {
-    const [scraped] = toSummaryTiles({ ...activity, comparable: undefined });
-
-    expect(scraped.details).toEqual([]);
   });
 });

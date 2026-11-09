@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { RememberedHeight } from '@app/shared/summary/remembered-height';
+import { RememberedHeight } from '@app/shared/remembered-height/remembered-height';
 
 @Component({
   imports: [RememberedHeight],
@@ -17,7 +17,7 @@ const render = async () => {
   await fixture.whenStable();
   const section = (fixture.nativeElement as HTMLElement).querySelector('section')!;
 
-  return { fixture, section, value: () => section.style.getPropertyValue('--summary-height') };
+  return { fixture, section, value: () => section.style.getPropertyValue('--remembered-height') };
 };
 
 describe('RememberedHeight', () => {

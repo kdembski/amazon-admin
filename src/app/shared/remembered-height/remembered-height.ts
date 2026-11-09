@@ -1,13 +1,10 @@
 import { afterRenderEffect, computed, Directive, ElementRef, inject, input } from '@angular/core';
+import { SavedHeight } from '@app/types/remembered-height';
 
 const read = (key: string) => {
   try {
-    const saved = JSON.parse(localStorage.getItem(key) ?? 'null') as {
-      width: number;
-      height: number;
-    } | null;
+    const saved = JSON.parse(localStorage.getItem(key) ?? 'null') as SavedHeight | null;
 
-    // Another window width can wrap the panels differently.
     return saved?.width === window.innerWidth ? saved.height : null;
   } catch {
     return null;
@@ -17,16 +14,16 @@ const read = (key: string) => {
 const save = (key: string, height: number) => {
   try {
     localStorage.setItem(key, JSON.stringify({ width: window.innerWidth, height }));
+
+    return true;
   } catch {
-    // Without storage the next load falls back to the default height.
+    return false;
   }
 };
 
-// The height depends on the data, so the skeleton takes it from the previous load. Before the
-// first load in this browser, or at a new window width, the default of --summary-height applies.
 @Directive({
   selector: '[appRememberedHeight]',
-  host: { '[style.--summary-height]': 'height()' },
+  host: { '[style.--remembered-height]': 'height()' },
 })
 export class RememberedHeight {
   readonly key = input.required<string>({ alias: 'appRememberedHeight' });

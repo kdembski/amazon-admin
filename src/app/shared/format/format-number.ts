@@ -25,7 +25,6 @@ const compactFormatter = (digits: number) => {
 const compactThousands = compactFormatter(0);
 const compactMillions = compactFormatter(1);
 
-// Millions keep one decimal (1.2m), smaller values none (123k).
 export const formatCompact = (value: number) => {
   const formatter = Math.abs(value) >= 1_000_000 ? compactMillions : compactThousands;
 

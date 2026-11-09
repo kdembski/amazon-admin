@@ -1,15 +1,14 @@
-import { inject } from '@angular/core';
 import { signalStore } from '@ngrx/signals';
 import { map } from 'rxjs';
-import { StatsApiService } from '@app/core/api/stats-api-service';
 import { withPolling } from '@app/shared/polling/with-polling';
 import { loadLastHourAndDay } from '@app/shared/summary/summary';
-import { toSummaryTiles } from './overview-charts';
+import { loadActivity } from './load-activity';
+import { toSummaryTiles } from './overview-summary';
 
 export const SummaryStore = signalStore(
   withPolling(() => {
-    const api = inject(StatsApiService);
+    const load = loadActivity();
 
-    return () => loadLastHourAndDay((range) => api.getActivity(range).pipe(map(toSummaryTiles)));
+    return () => loadLastHourAndDay((range) => load(range).pipe(map(toSummaryTiles)));
   }),
 );

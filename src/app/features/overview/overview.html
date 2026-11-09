@@ -1,19 +1,11 @@
 <h1>Overview</h1>
 
-<section
-  class="summary"
-  aria-label="Summary"
-  appRememberedHeight="overview-summary-height"
-  [loaded]="summary.data() !== null"
->
-  @if (summary.data(); as periods) {
-    <app-summary-panels [periods]="periods" />
-  } @else if (summary.error(); as error) {
-    <p class="error" role="alert">Failed to load the summary: {{ error }}</p>
-  } @else {
-    <app-summary-skeleton />
-  }
-</section>
+<app-summary-section
+  label="Summary"
+  storageKey="overview-summary-height"
+  [defaultHeight]="325"
+  [source]="summary"
+/>
 
 <app-range-panel heading="Scraped ads" [source]="scraped" [chart]="true">
   @if (scraped.data(); as chart) {

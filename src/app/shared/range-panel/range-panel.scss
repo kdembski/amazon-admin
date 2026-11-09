@@ -21,6 +21,11 @@
 }
 
 .body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: center;
+  min-height: var(--remembered-height, 0);
+  box-sizing: border-box;
   padding: 16px;
   border: 1px solid var(--app-border);
   border-radius: var(--mat-sys-corner-medium);
@@ -39,18 +44,10 @@
 .chart {
   display: grid;
   align-content: center;
-  // The height of TimeSeriesChart.
+  box-sizing: content-box;
   min-height: 288px;
 }
 
 .loading {
   margin: 0 auto;
-}
-
-.error {
-  margin: 0;
-  padding: 12px 16px;
-  border-radius: var(--mat-sys-corner-medium);
-  background: var(--mat-sys-error-container);
-  color: var(--mat-sys-on-error-container);
 }

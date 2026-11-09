@@ -13,11 +13,12 @@ import {
   startWith,
   timer,
 } from 'rxjs';
+import { MINUTE } from '@app/shared/time-range/time-range';
 import { PollEvent, PollState } from '@app/types/poll-state';
 
 export const poll = <T>(
   load: () => Observable<T>,
-  intervalMs = 60_000,
+  intervalMs = MINUTE,
   doc: Document = document,
 ): Observable<PollState<T>> => {
   const visible = fromEvent(doc, 'visibilitychange').pipe(filter(() => !doc.hidden));

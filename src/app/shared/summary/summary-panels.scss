@@ -1,12 +1,12 @@
 :host {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(384px, 1fr));
-  gap: 1.5rem;
+  gap: 24px;
 }
 
 .panel h2 {
-  margin: 0 0 0.5rem;
-  font-size: 0.875rem;
+  margin: 0 0 8px;
+  font-size: 14px;
   font-weight: 500;
 }
 
@@ -79,7 +79,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-// A fixed width lines the shares of all rows up.
 .share {
   display: inline-block;
   min-width: 32px;
@@ -91,7 +90,6 @@
 
 .change {
   font-size: 12px;
-  // A taller line, aligned by baseline with the value, would make the headline grow with the badge.
   line-height: 1;
 
   &.up {

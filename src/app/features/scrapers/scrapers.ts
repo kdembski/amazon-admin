@@ -1,33 +1,27 @@
 import { Component, inject } from '@angular/core';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { TimeSeriesChart } from '@app/shared/charts/time-series-chart';
 import { RangePanel } from '@app/shared/range-panel/range-panel';
-import { RememberedHeight } from '@app/shared/summary/remembered-height';
-import { SummaryPanels } from '@app/shared/summary/summary-panels';
-import { SummarySkeleton } from '@app/shared/summary/summary-skeleton';
-import { GroupToggle } from './group-toggle';
+import { SummarySection } from '@app/shared/summary/summary-section';
+import { AttemptsStore } from './attempts-store';
+import { CaptchaStore } from './captcha-store';
+import { CountryToggle } from './country-toggle';
+import { GroupedChartPanel } from './grouped-chart-panel';
+import { Http503Store } from './http503-store';
+import { ItemsStore } from './items-store';
 import { ScraperStatusList } from './scraper-status-list';
 import { ScraperSummaryStore } from './scraper-summary-store';
-import {
-  AttemptsStore,
-  CaptchaStore,
-  Http503Store,
-  ItemsStore,
-  StatusStore,
-  TransferStore,
-  WastedStore,
-} from './scrapers-store';
+import { StatusStore } from './status-store';
+import { TransferStore } from './transfer-store';
+import { WastedStore } from './wasted-store';
 
 @Component({
   selector: 'app-scrapers',
   imports: [
-    GroupToggle,
-    MatButtonToggleModule,
+    CountryToggle,
+    GroupedChartPanel,
     RangePanel,
-    RememberedHeight,
     ScraperStatusList,
-    SummaryPanels,
-    SummarySkeleton,
+    SummarySection,
     TimeSeriesChart,
   ],
   providers: [
@@ -40,8 +34,8 @@ import {
     TransferStore,
     ScraperSummaryStore,
   ],
+  host: { class: 'page' },
   templateUrl: './scrapers.html',
-  styleUrl: './scrapers.scss',
 })
 export class Scrapers {
   protected readonly statuses = inject(StatusStore);

@@ -1,19 +1,11 @@
 <h1>Scrapers</h1>
 
-<section
-  class="summary"
-  aria-label="Scraper summary"
-  appRememberedHeight="scrapers-summary-height"
-  [loaded]="summary.data() !== null"
->
-  @if (summary.data(); as periods) {
-    <app-summary-panels [periods]="periods" />
-  } @else if (summary.error(); as error) {
-    <p class="error" role="alert">Failed to load the summary: {{ error }}</p>
-  } @else {
-    <app-summary-skeleton />
-  }
-</section>
+<app-summary-section
+  label="Scraper summary"
+  storageKey="scrapers-summary-height"
+  [defaultHeight]="250"
+  [source]="summary"
+/>
 
 <app-range-panel heading="Status (last hour average)" [source]="statuses" [ranged]="false">
   @if (statuses.data(); as rows) {
@@ -27,47 +19,13 @@
   }
 </app-range-panel>
 
-<app-range-panel heading="Wasted %" [source]="wasted" [chart]="true">
-  <app-group-toggle panelActions [source]="wasted" label="Wasted % grouping" />
-  @if (wasted.chart(); as chart) {
-    <app-time-series-chart [series]="chart.series" [unit]="chart.unit" />
-  }
-</app-range-panel>
-
-<app-range-panel heading="Attempts/item" [source]="attempts" [chart]="true">
-  <app-group-toggle panelActions [source]="attempts" label="Attempts/item grouping" />
-  @if (attempts.chart(); as chart) {
-    <app-time-series-chart [series]="chart.series" [unit]="chart.unit" />
-  }
-</app-range-panel>
-
-<app-range-panel heading="Captcha %" [source]="captcha" [chart]="true">
-  <app-group-toggle panelActions [source]="captcha" label="Captcha % grouping" />
-  @if (captcha.chart(); as chart) {
-    <app-time-series-chart [series]="chart.series" [unit]="chart.unit" />
-  }
-</app-range-panel>
-
-<app-range-panel heading="503 %" [source]="http503" [chart]="true">
-  <app-group-toggle panelActions [source]="http503" label="503 % grouping" />
-  @if (http503.chart(); as chart) {
-    <app-time-series-chart [series]="chart.series" [unit]="chart.unit" />
-  }
-</app-range-panel>
+<app-grouped-chart-panel heading="Wasted %" [source]="wasted" />
+<app-grouped-chart-panel heading="Attempts/item" [source]="attempts" />
+<app-grouped-chart-panel heading="Captcha %" [source]="captcha" />
+<app-grouped-chart-panel heading="503 %" [source]="http503" />
 
 <app-range-panel heading="Transfer in + out (MB) per country" [source]="transfer" [chart]="true">
-  <mat-button-toggle-group
-    panelActions
-    multiple
-    hideMultipleSelectionIndicator
-    aria-label="Transfer countries"
-    [value]="transfer.visibleCountries()"
-    (change)="transfer.setVisibleCountries($event.value)"
-  >
-    @for (country of transfer.countries(); track country) {
-      <mat-button-toggle [value]="country">{{ country }}</mat-button-toggle>
-    }
-  </mat-button-toggle-group>
+  <app-country-toggle panelActions [source]="transfer" label="Transfer countries" />
   @if (transfer.chart(); as chart) {
     <app-time-series-chart [series]="chart.series" [unit]="chart.unit" />
   }
