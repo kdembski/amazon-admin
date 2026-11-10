@@ -32,7 +32,7 @@ const activity: ActivityStatsDto = {
     ad_created: 3,
     ad_deleted: 0,
   },
-  comparable: { minPrices: 3, total: 10, previousTotal: 5 },
+  comparable: { minPrices: 3, total: 10, previousTotal: 5, points: [] },
   countryOutlierChannels: [{ id: '1', name: 'outliers-de' }],
 };
 

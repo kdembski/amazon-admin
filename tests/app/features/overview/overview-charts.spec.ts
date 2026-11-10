@@ -40,12 +40,17 @@ const activity: ActivityStatsDto = {
     ad_created: 3,
     ad_deleted: 0,
   },
-  comparable: { minPrices: 3, total: 10, previousTotal: 5 },
+  comparable: {
+    minPrices: 3,
+    total: 10,
+    previousTotal: 5,
+    points: [{ t: hour(12).toISOString(), value: 10 }],
+  },
   countryOutlierChannels: [{ id: '1', name: 'outliers-de' }],
 };
 
 describe('toScrapedSeries', () => {
-  it('fills every hour of the range with zeros', () => {
+  it('returns the scraped and comparable ads with every hour of the range filled with zeros', () => {
     expect(toScrapedSeries(activity, range, 'hour')).toEqual([
       {
         label: 'Scraped ads',
@@ -55,7 +60,21 @@ describe('toScrapedSeries', () => {
           { t: hour(12), value: 0 },
         ],
       },
+      {
+        label: '3+ prices',
+        points: [
+          { t: hour(10), value: 0 },
+          { t: hour(11), value: 0 },
+          { t: hour(12), value: 10 },
+        ],
+      },
     ]);
+  });
+
+  it('leaves out the comparable ads without the minPrices setting', () => {
+    const series = toScrapedSeries({ ...activity, comparable: undefined }, range, 'hour');
+
+    expect(series.map((s) => s.label)).toEqual(['Scraped ads']);
   });
 
   it('sums the hours of each local day', () => {

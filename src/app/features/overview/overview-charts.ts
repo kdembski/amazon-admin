@@ -9,8 +9,20 @@ export const toScrapedSeries = (
   range: TimeRange,
   unit: Granularity,
 ): ChartSeries[] => {
+  const { comparable } = dto;
+  const scraped = {
+    label: 'Scraped ads',
+    points: toChartPoints(pointsOf(dto, 'ad_scraped'), range, unit),
+  };
+
+  if (!comparable) return [scraped];
+
   return [
-    { label: 'Scraped ads', points: toChartPoints(pointsOf(dto, 'ad_scraped'), range, unit) },
+    scraped,
+    {
+      label: `${comparable.minPrices}+ prices`,
+      points: toChartPoints(comparable.points, range, unit),
+    },
   ];
 };
 
